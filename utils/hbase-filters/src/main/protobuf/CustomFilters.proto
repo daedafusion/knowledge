@@ -1,0 +1,11 @@
+option java_package = "com.daedafusion.hbase.protobuf";
+option java_outer_classname = "CustomFilterProtos";
+option java_generic_services = true;
+option java_generate_equals_and_hash = true;
+option optimize_for = SPEED;
+
+message PostfixFilter {
+    required int32 compare_op = 1;
+    required int32 offset = 2;
+    required bytes postfix = 3;
+}
