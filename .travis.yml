@@ -4,3 +4,11 @@ jdk:
   - oraclejdk8
 
 sudo: false
+
+addons:
+  apt:
+    packages:
+      - protobuf-compiler
+
+install: mvn install -DskipTests=true -Ptravis
+script: mvn test -Ptravis

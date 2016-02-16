@@ -3,8 +3,10 @@ package com.daedafusion.hbase;
 import com.daedafusion.hbase.protobuf.CustomFilterProtos;
 import com.google.protobuf.HBaseZeroCopyByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.exceptions.DeserializationException;
 import org.apache.hadoop.hbase.filter.CompareFilter;
+import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterBase;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
@@ -56,6 +58,13 @@ public class PostfixFilter extends FilterBase
                 // Filter out by default
                 return true;
         }
+    }
+
+    @Override
+    public ReturnCode filterKeyValue(Cell v) throws IOException
+    {
+        // We're only filtering on Keys, so if it passed filterRowKey, then include it
+        return ReturnCode.INCLUDE;
     }
 
     @Override
