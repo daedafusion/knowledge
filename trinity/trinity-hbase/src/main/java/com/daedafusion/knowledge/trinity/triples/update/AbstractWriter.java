@@ -2,6 +2,7 @@ package com.daedafusion.knowledge.trinity.triples.update;
 
 import com.daedafusion.configuration.Configuration;
 import com.daedafusion.knowledge.trinity.dictionary.Dictionary;
+import com.daedafusion.knowledge.trinity.util.HashBytes;
 import com.daedafusion.sparql.Literal;
 import com.daedafusion.knowledge.trinity.util.HBasePool;
 import com.daedafusion.knowledge.trinity.util.Hash;
@@ -64,7 +65,7 @@ public abstract class AbstractWriter implements Closeable
      */
     protected Set<String> resourceStrategy;
 
-    protected Map<String, Long> partitionCache;
+    protected Map<String, HashBytes> partitionCache;
 
     public void init() throws IOException
     {
@@ -112,7 +113,7 @@ public abstract class AbstractWriter implements Closeable
 
     protected void delete(String partition, List<T> triples) throws IOException
     {
-        long partitionHash;
+        HashBytes partitionHash;
 
         if(partitionCache.containsKey(partition))
         {
@@ -134,66 +135,66 @@ public abstract class AbstractWriter implements Closeable
 
         for(T t : triples)
         {
-            long subjectHash = Hash.hashString(t.s);
-            long predicateHash = Hash.hashString(t.p);
-            long objectHash = Hash.hashString(t.o);
+            HashBytes subjectHash = Hash.hashString(t.s);
+            HashBytes predicateHash = Hash.hashString(t.p);
+            HashBytes objectHash = Hash.hashString(t.o);
 
             Delete delete = buildDelete(
                     buildKey(
-                            partitionHash,
-                            subjectHash,
-                            predicateHash,
-                            objectHash
+                            partitionHash.getBytes(),
+                            subjectHash.getBytes(),
+                            predicateHash.getBytes(),
+                            objectHash.getBytes()
                     )
             );
             deletes.get(spoTable).add(delete);
 
             delete = buildDelete(
                     buildKey(
-                            partitionHash,
-                            predicateHash,
-                            objectHash,
-                            subjectHash
+                            partitionHash.getBytes(),
+                            predicateHash.getBytes(),
+                            objectHash.getBytes(),
+                            subjectHash.getBytes()
                     )
             );
             deletes.get(posTable).add(delete);
 
             delete = buildDelete(
                     buildKey(
-                            partitionHash,
-                            objectHash,
-                            subjectHash,
-                            predicateHash
+                            partitionHash.getBytes(),
+                            objectHash.getBytes(),
+                            subjectHash.getBytes(),
+                            predicateHash.getBytes()
                     )
             );
             deletes.get(ospTable).add(delete);
 
             delete = buildDelete(
                     buildKey(
-                            subjectHash,
-                            predicateHash,
-                            objectHash,
-                            partitionHash
+                            subjectHash.getBytes(),
+                            predicateHash.getBytes(),
+                            objectHash.getBytes(),
+                            partitionHash.getBytes()
                     )
             );
             deletes.get(spopTable).add(delete);
 
             delete = buildDelete(
                     buildKey(
-                            predicateHash,
-                            objectHash,
-                            subjectHash,
-                            partitionHash
+                            predicateHash.getBytes(),
+                            objectHash.getBytes(),
+                            subjectHash.getBytes(),
+                            partitionHash.getBytes()
                     )
             );
             deletes.get(pospTable).add(delete);
 
             delete = buildDelete(
                     buildKey(
-                            objectHash,
-                            subjectHash,
-                            predicateHash,
-                            partitionHash
+                            objectHash.getBytes(),
+                            subjectHash.getBytes(),
+                            predicateHash.getBytes(),
+                            partitionHash.getBytes()
                     )
             );
             deletes.get(osppTable).add(delete);
@@ -223,7 +224,7 @@ public abstract class AbstractWriter implements Closeable
      */
     protected void add(String partition, String subject, String predicate, String object, String objectLiteral, String objectLiteralDatatype, String objectLiteralLang, Long epoch, String externalSource, String ingestId) throws IOException
     {
-        long partitionHash;
+        HashBytes partitionHash;
 
         if(partitionCache.containsKey(partition))
         {
@@ -235,9 +236,9 @@ public abstract class AbstractWriter implements Closeable
             partitionCache.put(partition, partitionHash);
         }
 
-        long subjectHash = Hash.hashString(subject);
-        long predicateHash = Hash.hashString(predicate);
-        long objectHash = Hash.hashString(object);
+        HashBytes subjectHash = Hash.hashString(subject);
+        HashBytes predicateHash = Hash.hashString(predicate);
+        HashBytes objectHash = Hash.hashString(object);
 
         // Add to dictionary
         dictionary.setResource(subjectHash, subject);
@@ -254,10 +255,10 @@ public abstract class AbstractWriter implements Closeable
 
         Put put = buildPut(
                 buildKey(
-                        partitionHash,
-                        subjectHash,
-                        predicateHash,
-                        objectHash
+                        partitionHash.getBytes(),
+                        subjectHash.getBytes(),
+                        predicateHash.getBytes(),
+                        objectHash.getBytes()
                 ),
                 epoch,
                 externalSource.getBytes(Charsets.UTF_8),
@@ -268,10 +269,10 @@ public abstract class AbstractWriter implements Closeable
 
         put = buildPut(
                 buildKey(
-                        partitionHash,
-                        predicateHash,
-                        objectHash,
-                        subjectHash
+                        partitionHash.getBytes(),
+                        predicateHash.getBytes(),
+                        objectHash.getBytes(),
+                        subjectHash.getBytes()
                 ),
                 epoch,
                 externalSource.getBytes(Charsets.UTF_8),
@@ -282,10 +283,10 @@ public abstract class AbstractWriter implements Closeable
 
         put = buildPut(
                 buildKey(
-                        partitionHash,
-                        objectHash,
-                        subjectHash,
-                        predicateHash
+                        partitionHash.getBytes(),
+                        objectHash.getBytes(),
+                        subjectHash.getBytes(),
+                        predicateHash.getBytes()
                 ),
                 epoch,
                 externalSource.getBytes(Charsets.UTF_8),
@@ -297,10 +298,10 @@ public abstract class AbstractWriter implements Closeable
         // Write post fix tables
         put = buildPut(
                 buildKey(
-                        subjectHash,
-                        predicateHash,
-                        objectHash,
-                        partitionHash
+                        subjectHash.getBytes(),
+                        predicateHash.getBytes(),
+                        objectHash.getBytes(),
+                        partitionHash.getBytes()
                 ),
                 epoch,
                 externalSource.getBytes(Charsets.UTF_8),
@@ -311,10 +312,10 @@ public abstract class AbstractWriter implements Closeable
 
         put = buildPut(
                 buildKey(
-                        predicateHash,
-                        objectHash,
-                        subjectHash,
-                        partitionHash
+                        predicateHash.getBytes(),
+                        objectHash.getBytes(),
+                        subjectHash.getBytes(),
+                        partitionHash.getBytes()
                 ),
                 epoch,
                 externalSource.getBytes(Charsets.UTF_8),
@@ -325,10 +326,10 @@ public abstract class AbstractWriter implements Closeable
 
         put = buildPut(
                 buildKey(
-                        objectHash,
-                        subjectHash,
-                        predicateHash,
-                        partitionHash
+                        objectHash.getBytes(),
+                        subjectHash.getBytes(),
+                        predicateHash.getBytes(),
+                        partitionHash.getBytes()
                 ),
                 epoch,
                 externalSource.getBytes(Charsets.UTF_8),
@@ -351,7 +352,7 @@ public abstract class AbstractWriter implements Closeable
      */
     protected void add(String partition, String subject, String predicate, String object, Long epoch, String externalSource, String ingestId) throws IOException
     {
-        long partitionHash;
+        HashBytes partitionHash;
 
         if(partitionCache.containsKey(partition))
         {
@@ -363,9 +364,9 @@ public abstract class AbstractWriter implements Closeable
             partitionCache.put(partition, partitionHash);
         }
 
-        long subjectHash = Hash.hashString(subject);
-        long predicateHash = Hash.hashString(predicate);
-        long objectHash = Hash.hashString(object);
+        HashBytes subjectHash = Hash.hashString(subject);
+        HashBytes predicateHash = Hash.hashString(predicate);
+        HashBytes objectHash = Hash.hashString(object);
 
         // Add to dictionary
         dictionary.setResource(subjectHash, subject);
@@ -374,10 +375,10 @@ public abstract class AbstractWriter implements Closeable
 
         Put put = buildPut(
                 buildKey(
-                        partitionHash,
-                        subjectHash,
-                        predicateHash,
-                        objectHash
+                        partitionHash.getBytes(),
+                        subjectHash.getBytes(),
+                        predicateHash.getBytes(),
+                        objectHash.getBytes()
                 ),
                 epoch,
                 externalSource.getBytes(Charsets.UTF_8),
@@ -388,10 +389,10 @@ public abstract class AbstractWriter implements Closeable
 
         put = buildPut(
                 buildKey(
-                        partitionHash,
-                        predicateHash,
-                        objectHash,
-                        subjectHash
+                        partitionHash.getBytes(),
+                        predicateHash.getBytes(),
+                        objectHash.getBytes(),
+                        subjectHash.getBytes()
                 ),
                 epoch,
                 externalSource.getBytes(Charsets.UTF_8),
@@ -402,10 +403,10 @@ public abstract class AbstractWriter implements Closeable
 
         put = buildPut(
                 buildKey(
-                        partitionHash,
-                        objectHash,
-                        subjectHash,
-                        predicateHash
+                        partitionHash.getBytes(),
+                        objectHash.getBytes(),
+                        subjectHash.getBytes(),
+                        predicateHash.getBytes()
                 ),
                 epoch,
                 externalSource.getBytes(Charsets.UTF_8),
@@ -417,10 +418,10 @@ public abstract class AbstractWriter implements Closeable
         // Write post fix tables
         put = buildPut(
                 buildKey(
-                        subjectHash,
-                        predicateHash,
-                        objectHash,
-                        partitionHash
+                        subjectHash.getBytes(),
+                        predicateHash.getBytes(),
+                        objectHash.getBytes(),
+                        partitionHash.getBytes()
                 ),
                 epoch,
                 externalSource.getBytes(Charsets.UTF_8),
@@ -431,10 +432,10 @@ public abstract class AbstractWriter implements Closeable
 
         put = buildPut(
                 buildKey(
-                        predicateHash,
-                        objectHash,
-                        subjectHash,
-                        partitionHash
+                        predicateHash.getBytes(),
+                        objectHash.getBytes(),
+                        subjectHash.getBytes(),
+                        partitionHash.getBytes()
                 ),
                 epoch,
                 externalSource.getBytes(Charsets.UTF_8),
@@ -445,10 +446,10 @@ public abstract class AbstractWriter implements Closeable
 
         put = buildPut(
                 buildKey(
-                        objectHash,
-                        subjectHash,
-                        predicateHash,
-                        partitionHash
+                        objectHash.getBytes(),
+                        subjectHash.getBytes(),
+                        predicateHash.getBytes(),
+                        partitionHash.getBytes()
                 ),
                 epoch,
                 externalSource.getBytes(Charsets.UTF_8),
@@ -458,13 +459,13 @@ public abstract class AbstractWriter implements Closeable
         osppTable.put(put);
     }
 
-    private byte[] buildKey(long zero, long first, long second, long third)
+    private byte[] buildKey(byte[] zero, byte[] first, byte[] second, byte[] third)
     {
         ByteBuffer buff = ByteBuffer.allocate(Schema.TRIPLE_KEY_LENGTH);
-        buff.put(Bytes.toBytes(zero));
-        buff.put(Bytes.toBytes(first));
-        buff.put(Bytes.toBytes(second));
-        buff.put(Bytes.toBytes(third));
+        buff.put(zero);
+        buff.put(first);
+        buff.put(second);
+        buff.put(third);
         return buff.array();
     }
 

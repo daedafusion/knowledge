@@ -16,7 +16,8 @@ public class Schema
     private static final Logger log = Logger.getLogger(Schema.class);
 
     // Key Definition SPO :: hash(partition) + hash(subject) + hash(predicate) + hash(object)
-    public static final int TRIPLE_KEY_LENGTH = 32; // 4 longs * 8 bytes
+    // Hashing function produces 128 bits of entropy (murmur3_128)
+    public static final int TRIPLE_KEY_LENGTH = 64; // 4 hashes * 16 bytes (128 bits)
 
     public static final String NAMESPACE = "default"; // TODO separate namespace?
     public static final String T_SPO     = "t_spo";
@@ -83,7 +84,7 @@ public class Schema
     // TimeSeries
 
     // Key Definition ETS :: volume (short) + hash(partition) + -epoch (long) + hash(rdfType of Record) + hash(subject URI) + sequence (int)
-    public static final int TIMESERIES_KEY_LENGTH = 38; // 1 short * 2 bytes + 4 longs * 8 bytes + 1 int * 4 bytes
+    public static final int TIMESERIES_KEY_LENGTH = 70; // 1 short * 2 bytes + 4 hashes * 16 bytes + 1 int * 4 bytes
 
     public static final String T_TS_ETS = "ts_ets"; // epoch, type, subject
     public static final String T_TS_SET = "ts_set"; // subject, epoch, type
