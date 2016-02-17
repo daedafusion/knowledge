@@ -23,6 +23,22 @@
         </dependency>
     </dependencies>
 
+    <properties>
+        <protoc.path>/usr/local/bin/protoc</protoc.path>
+        <protoc.version>2.5.0</protoc.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>travis</id>
+            <properties>
+                <!-- This obviously isn't ideal -->
+                <protoc.path>/usr/bin/protoc</protoc.path>
+                <protoc.version>2.4.1</protoc.version>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -37,8 +53,8 @@
                             <goal>protoc</goal>
                         </goals>
                         <configuration>
-                            <protocVersion>2.5.0</protocVersion>
-                            <protocCommand>/usr/local/bin/protoc</protocCommand>
+                            <protocVersion>${protoc.version}</protocVersion>
+                            <protocCommand>${protoc.path}</protocCommand>
                             <imports>
                                 <param>${basedir}/src/main/protobuf</param>
                             </imports>
