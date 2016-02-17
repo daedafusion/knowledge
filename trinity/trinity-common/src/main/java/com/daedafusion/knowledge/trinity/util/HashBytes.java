@@ -87,6 +87,7 @@ public class HashBytes
             else
             {
                 high = high.plus(UnsignedLong.ONE);
+                low = UnsignedLong.ZERO;
             }
         }
         else
