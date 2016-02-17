@@ -2,6 +2,7 @@ package com.daedafusion.knowledge.trinity.triples.query.strategy;
 
 import com.daedafusion.knowledge.trinity.conf.Schema;
 import com.daedafusion.knowledge.trinity.triples.query.QueryContext;
+import com.daedafusion.knowledge.trinity.util.HashBytes;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.Filter;
@@ -24,16 +25,16 @@ public abstract class AbstractQueryStrategy implements QueryStrategy
 
     protected QueryContext context;
 
-    protected byte[] buildKey(Long partition, long first, long second, long third)
+    protected byte[] buildKey(HashBytes partition, HashBytes first, HashBytes second, HashBytes third)
     {
         ByteBuffer buff = ByteBuffer.allocate(Schema.TRIPLE_KEY_LENGTH);
 
         if(partition != null)
-            buff.put(Bytes.toBytes(partition));
+            buff.put(partition.getBytes());
 
-        buff.put(Bytes.toBytes(first));
-        buff.put(Bytes.toBytes(second));
-        buff.put(Bytes.toBytes(third));
+        buff.put(first.getBytes());
+        buff.put(second.getBytes());
+        buff.put(third.getBytes());
 
         if(partition == null)
             buff.put(Bytes.toBytes(0L));
@@ -41,26 +42,26 @@ public abstract class AbstractQueryStrategy implements QueryStrategy
         return buff.array();
     }
 
-    protected byte[] buildEndKey(Long partition, long first, long second, long third)
+    protected byte[] buildEndKey(HashBytes partition, HashBytes first, HashBytes second, HashBytes third)
     {
-        long endFirst = 0;
-        long endSecond = 0;
-        long endThird = 0;
+        HashBytes endFirst = new HashBytes();
+        HashBytes endSecond = new HashBytes();
+        HashBytes endThird = new HashBytes();
 
-        if(second != 0 && third != 0)
+        if(!second.isEmpty() && !third.isEmpty())
         {
-            endFirst = first;
-            endSecond = second;
-            endThird = third+1;
+            endFirst.setBytes(first);
+            endSecond.setBytes(second);
+            endThird.setBytes(third.plusOne());
         }
-        else if(second != 0)
+        else if(!second.isEmpty())
         {
-            endFirst = first;
-            endSecond = second + 1;
+            endFirst.setBytes(first);
+            endSecond.setBytes(second.plusOne());
         }
         else
         {
-            endFirst = first+1;
+            endFirst.setBytes(first.plusOne());
         }
 
         return buildKey(partition, endFirst, endSecond, endThird);

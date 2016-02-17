@@ -13,17 +13,17 @@ public class Hash
 {
     private static final Logger log = Logger.getLogger(Hash.class);
 
-    public static long hashString(String value)
+    public static HashBytes hashString(String value)
     {
-        return Hashing.murmur3_128().hashString(value, Charset.forName("UTF-8")).asLong();
+        return new HashBytes(Hashing.murmur3_128().hashString(value, Charset.forName("UTF-8")).asBytes());
     }
 
-    public static long hashBytes(byte[] bytes)
+    public static HashBytes hashBytes(byte[] bytes)
     {
-        return Hashing.murmur3_128().hashBytes(bytes).asLong();
+        return new HashBytes(Hashing.murmur3_128().hashBytes(bytes).asBytes());
     }
 
-    public static long hashNode(Node node)
+    public static HashBytes hashNode(Node node)
     {
         return hashString(node.toString());
     }

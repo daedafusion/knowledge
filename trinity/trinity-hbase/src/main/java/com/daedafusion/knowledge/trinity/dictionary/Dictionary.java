@@ -1,5 +1,6 @@
 package com.daedafusion.knowledge.trinity.dictionary;
 
+import com.daedafusion.knowledge.trinity.util.HashBytes;
 import com.daedafusion.sparql.Literal;
 import com.daedafusion.knowledge.trinity.util.HBasePool;
 import com.daedafusion.knowledge.trinity.util.Hash;
@@ -25,9 +26,9 @@ public class Dictionary implements Closeable
     protected HTableInterface pDict;
     protected HTableInterface plDict;
 
-    protected Cache<Long, String> resDictCache;
-    protected Cache<Long, String> pDictCache;
-    protected Cache<Long, Literal> lDictCache;
+    protected Cache<HashBytes, String> resDictCache;
+    protected Cache<HashBytes, String> pDictCache;
+    protected Cache<HashBytes, Literal> lDictCache;
 
     public Dictionary()
     {
@@ -62,10 +63,10 @@ public class Dictionary implements Closeable
         lDictCache = GlobalDictionaryCache.getInstance().getLiteralCache();
     }
 
-    public void setPredicateLiteral(Long predicateHash, String literal)
+    public void setPredicateLiteral(HashBytes predicateHash, String literal)
     {
         // TODO may need configurable logic to limit size of key by truncating literal
-        Put put = new Put(Bytes.add(Bytes.toBytes(predicateHash), Bytes.toBytes(literal)));
+        Put put = new Put(Bytes.add(predicateHash.getBytes(), Bytes.toBytes(literal)));
         put.add(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(literal));
         try
         {
@@ -91,16 +92,16 @@ public class Dictionary implements Closeable
      * @param literalPrefix
      * @return
      */
-    public Set<String> getPredicateLiterals(Long predicateHash, String literalPrefix)
+    public Set<String> getPredicateLiterals(HashBytes predicateHash, String literalPrefix)
     {
         Set<String> result = new HashSet<>();
 
         Scan scan = new Scan();
-        scan.setStartRow(Bytes.add(Bytes.toBytes(predicateHash), Bytes.toBytes(literalPrefix)));
+        scan.setStartRow(Bytes.add(predicateHash.getBytes(), Bytes.toBytes(literalPrefix)));
         //scan.setStopRow(Bytes.add(Bytes.toBytes(predicateHash), Bytes.toBytes(literalPrefix+" ")));
         scan.setCaching(100); // TODO make configurable
 
-        int length = Bytes.toBytes(predicateHash).length;
+        int length = predicateHash.getBytes().length;
 
         try(ResultScanner scanner = plDict.getScanner(scan))
         {
@@ -108,7 +109,7 @@ public class Dictionary implements Closeable
             {
                 String value = Bytes.toString(row.getValue(Schema.F_DICTIONARY, Schema.Q_DVALUE));
 
-                if(Bytes.compareTo(row.getRow(), 0, length, Bytes.toBytes(predicateHash), 0, length) != 0 ||
+                if(Bytes.compareTo(row.getRow(), 0, length, predicateHash.getBytes(), 0, length) != 0 ||
                         (value != null && !value.startsWith(literalPrefix)))
                 {
                     break;
@@ -130,27 +131,27 @@ public class Dictionary implements Closeable
         return result;
     }
 
-    public boolean isCached(Long hash)
+    public boolean isCached(HashBytes hash)
     {
         return resDictCache.contains(hash) || pDictCache.contains(hash) || lDictCache.contains(hash);
     }
 
-    public void cacheResource(Long hash, String resource)
+    public void cacheResource(HashBytes hash, String resource)
     {
         resDictCache.put(hash, resource);
     }
 
-    public void cachePredicate(Long hash, String predicate)
+    public void cachePredicate(HashBytes hash, String predicate)
     {
         pDictCache.put(hash, predicate);
     }
 
-    public void cacheLiteral(Long hash, Literal literal)
+    public void cacheLiteral(HashBytes hash, Literal literal)
     {
         lDictCache.put(hash, literal);
     }
 
-    public String getResource(Long hash)
+    public String getResource(HashBytes hash)
     {
         String resource = resDictCache.get(hash);
 
@@ -158,7 +159,7 @@ public class Dictionary implements Closeable
         {
             try
             {
-                Result result = resDict.get(new Get(Bytes.toBytes(hash)));
+                Result result = resDict.get(new Get(hash.getBytes()));
                 resource = Bytes.toString(result.getValue(Schema.F_DICTIONARY, Schema.Q_DVALUE));
                 resDictCache.put(hash, resource);
             }
@@ -171,7 +172,7 @@ public class Dictionary implements Closeable
         return resource;
     }
 
-    public Literal getLiteral(Long hash)
+    public Literal getLiteral(HashBytes hash)
     {
         Literal literal = lDictCache.get(hash);
 
@@ -180,7 +181,7 @@ public class Dictionary implements Closeable
             try
             {
                 literal = new Literal();
-                Result result = resDict.get(new Get(Bytes.toBytes(hash)));
+                Result result = resDict.get(new Get(hash.getBytes()));
                 literal.value = Bytes.toString(result.getValue(Schema.F_DICTIONARY, Schema.Q_DVALUE));
 
                 if(result.containsColumn(Schema.F_DICTIONARY, Schema.Q_DTYPE))
@@ -199,7 +200,7 @@ public class Dictionary implements Closeable
         return literal;
     }
 
-    public String getPredicate(Long hash)
+    public String getPredicate(HashBytes hash)
     {
         String predicate = pDictCache.get(hash);
 
@@ -207,7 +208,7 @@ public class Dictionary implements Closeable
         {
             try
             {
-                Result result = pDict.get(new Get(Bytes.toBytes(hash)));
+                Result result = pDict.get(new Get(hash.getBytes()));
                 predicate = Bytes.toString(result.getValue(Schema.F_DICTIONARY, Schema.Q_DVALUE));
                 pDictCache.put(hash, predicate);
             }
@@ -220,7 +221,7 @@ public class Dictionary implements Closeable
         return predicate;
     }
 
-    public void setResource(Long hash, String resource)
+    public void setResource(HashBytes hash, String resource)
     {
         if(resDictCache.get(hash) != null)
         {
@@ -229,7 +230,7 @@ public class Dictionary implements Closeable
 
         try
         {
-            Put put = new Put(Bytes.toBytes(hash));
+            Put put = new Put(hash.getBytes());
             put.add(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(resource));
             resDict.put(put);
             resDictCache.put(hash, resource);
@@ -240,7 +241,7 @@ public class Dictionary implements Closeable
         }
     }
 
-    public void setLiteral(Long hash, Literal literal)
+    public void setLiteral(HashBytes hash, Literal literal)
     {
         if(lDictCache.get(hash) != null)
         {
@@ -249,7 +250,7 @@ public class Dictionary implements Closeable
 
         try
         {
-            Put put = new Put(Bytes.toBytes(hash));
+            Put put = new Put(hash.getBytes());
             put.add(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(literal.value));
 
             if(literal.type != null)
@@ -266,7 +267,7 @@ public class Dictionary implements Closeable
         }
     }
 
-    public void setPredicate(Long hash, String predicate)
+    public void setPredicate(HashBytes hash, String predicate)
     {
         if(pDictCache.get(hash) != null)
         {
@@ -275,7 +276,7 @@ public class Dictionary implements Closeable
 
         try
         {
-            Put put = new Put(Bytes.toBytes(hash));
+            Put put = new Put(hash.getBytes());
             put.add(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(predicate));
             pDict.put(put);
             pDictCache.put(hash, predicate);
@@ -303,7 +304,7 @@ public class Dictionary implements Closeable
         plDict.close();
     }
 
-    public boolean isCachedLiteral(long objectHash)
+    public boolean isCachedLiteral(HashBytes objectHash)
     {
         return lDictCache.contains(objectHash);
     }

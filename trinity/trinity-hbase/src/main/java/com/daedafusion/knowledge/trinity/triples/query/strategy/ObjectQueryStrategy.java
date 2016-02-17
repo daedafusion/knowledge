@@ -4,6 +4,7 @@ import com.daedafusion.knowledge.trinity.util.HBasePool;
 import com.daedafusion.knowledge.trinity.util.Hash;
 import com.daedafusion.knowledge.trinity.conf.Schema;
 import com.daedafusion.knowledge.trinity.triples.query.QueryContext;
+import com.daedafusion.knowledge.trinity.util.HashBytes;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -56,18 +57,17 @@ public class ObjectQueryStrategy extends AbstractQueryStrategy
         for(String partition : context.getQuery().getPartitions())
         {
 
-            long partitionHash = Hash.hashString(partition);
+            HashBytes partitionHash = Hash.hashString(partition);
 
-            long objectHash;
+            HashBytes objectHash;
 
             if(object.isLiteral())
                 objectHash = Hash.hashString((String) object.getLiteralValue());
             else
                 objectHash = Hash.hashNode(object);
 
-            long subjectHash = 0;
-            long predicateHash = 0;
-
+            HashBytes subjectHash = new HashBytes();
+            HashBytes predicateHash = new HashBytes();
 
             if (subject.isConcrete())
             {
@@ -133,27 +133,27 @@ public class ObjectQueryStrategy extends AbstractQueryStrategy
         return new ScanIterator(startKeys, scanners, new KeyParser()
         {
             @Override
-            public Long getPartitionHash(byte[] bytes)
+            public HashBytes getPartitionHash(byte[] bytes)
             {
-                return Bytes.toLong(bytes, 0, Bytes.SIZEOF_LONG);
+                return new HashBytes(bytes, 0, HashBytes.SIZEOF_HASH);
             }
 
             @Override
-            public Long getSubjectHash(byte[] bytes)
+            public HashBytes getSubjectHash(byte[] bytes)
             {
-                return Bytes.toLong(bytes, 2*Bytes.SIZEOF_LONG, Bytes.SIZEOF_LONG);
+                return new HashBytes(bytes, 2*HashBytes.SIZEOF_HASH, HashBytes.SIZEOF_HASH);
             }
 
             @Override
-            public Long getPredicateHash(byte[] bytes)
+            public HashBytes getPredicateHash(byte[] bytes)
             {
-                return Bytes.toLong(bytes, 3*Bytes.SIZEOF_LONG, Bytes.SIZEOF_LONG);
+                return new HashBytes(bytes, 3*HashBytes.SIZEOF_HASH, HashBytes.SIZEOF_HASH);
             }
 
             @Override
-            public Long getObjectHash(byte[] bytes)
+            public HashBytes getObjectHash(byte[] bytes)
             {
-                return Bytes.toLong(bytes, Bytes.SIZEOF_LONG, Bytes.SIZEOF_LONG);
+                return new HashBytes(bytes, HashBytes.SIZEOF_HASH, HashBytes.SIZEOF_HASH);
             }
         }, context);
 

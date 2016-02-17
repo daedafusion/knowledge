@@ -1,5 +1,6 @@
 package com.daedafusion.knowledge.trinity.triples.query.strategy;
 
+import com.daedafusion.knowledge.trinity.util.HashBytes;
 import com.daedafusion.sparql.Literal;
 import com.daedafusion.knowledge.trinity.TripleMeta;
 import com.daedafusion.knowledge.trinity.conf.Schema;
@@ -123,9 +124,9 @@ public class ScanIterator extends NiceIterator<Triple>
         previousKey = result.getRow();
 
 //        Long lPartition = keyParser.getPartitionHash(result.getRow());
-        Long lSubject = keyParser.getSubjectHash(result.getRow());
-        Long lPredicate = keyParser.getPredicateHash(result.getRow());
-        Long lObject = keyParser.getObjectHash(result.getRow());
+        HashBytes lSubject = keyParser.getSubjectHash(result.getRow());
+        HashBytes lPredicate = keyParser.getPredicateHash(result.getRow());
+        HashBytes lObject = keyParser.getObjectHash(result.getRow());
 
         Triple t = createTriple(result, lSubject, lPredicate, lObject);
 
@@ -153,7 +154,7 @@ public class ScanIterator extends NiceIterator<Triple>
         }
     }
 
-    protected Triple createTriple(Result result, long subjectHash, long predicateHash, long objectHash)
+    protected Triple createTriple(Result result, HashBytes subjectHash, HashBytes predicateHash, HashBytes objectHash)
     {
         Node subject, predicate, object;
 

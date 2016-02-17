@@ -355,6 +355,11 @@
                 <artifactId>hbase-client</artifactId>
                 <version>${hbase.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase-common</artifactId>
+                <version>${hbase.version}</version>
+            </dependency>
             <!-- Need server for the map reduce utils -->
             <dependency>
                 <groupId>org.apache.hbase</groupId>
