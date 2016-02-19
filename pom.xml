@@ -15,6 +15,7 @@
         <module>utils</module>
         <module>trinity</module>
         <module>ontology</module>
+        <module>partition</module>
         <module>query</module>
     </modules>
 

@@ -34,6 +34,26 @@
             <artifactId>configuration-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.daedafusion</groupId>
+            <artifactId>cache-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.daedafusion</groupId>
+            <artifactId>events-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.daedafusion</groupId>
+            <artifactId>service-identity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.daedafusion.knowledge</groupId>
+            <artifactId>ontology-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.daedafusion.knowledge</groupId>
+            <artifactId>ontology-model</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
         </dependency>
