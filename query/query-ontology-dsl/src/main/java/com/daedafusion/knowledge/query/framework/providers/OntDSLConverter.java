@@ -1,23 +1,18 @@
 package com.daedafusion.knowledge.query.framework.providers;
 
-import com.df.argos.commons.cache.Cache;
-import com.df.argos.commons.cache.CacheManager;
+import com.daedafusion.cache.Cache;
+import com.daedafusion.cache.CacheManager;
 import com.daedafusion.sf.AbstractProvider;
 import com.daedafusion.sf.LifecycleListener;
-import com.df.argos.knowledge.query.core.QueryConverter;
-import com.df.argos.knowledge.query.core.QueryParserException;
-import com.df.argos.knowledge.query.core.WhereClauseListener;
-import com.df.argos.knowledge.query.core.WhereClauseListenerPool;
-import com.df.argos.knowledge.query.framework.providers.ConverterProvider;
 import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.log4j.Logger;
 
 /**
  * Created by mphilpot on 9/5/14.
  */
-public class OntDSLConverter extends AbstractProvider implements ConverterProvider
+public class OntDSLConverter extends AbstractProvider implements DSLToSparqlProvider
 {
-    private static final Logger log = Logger.getLogger(DefaultConverter.class);
+    private static final Logger log = Logger.getLogger(OntDSLConverter.class);
 
     private final QueryConverter queryConverter;
     private WhereClauseListenerPool pool;

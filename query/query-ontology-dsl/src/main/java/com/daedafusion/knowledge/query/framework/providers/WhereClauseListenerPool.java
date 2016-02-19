@@ -1,6 +1,6 @@
 package com.daedafusion.knowledge.query.framework.providers;
 
-import com.df.argos.commons.cache.Cache;
+import com.daedafusion.cache.Cache;
 import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.KeyedPooledObjectFactory;

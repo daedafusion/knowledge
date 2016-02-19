@@ -1,5 +1,7 @@
 package com.daedafusion.knowledge.query.framework.providers;
 
+import com.daedafusion.knowledge.query.dsl.QueryLexer;
+import com.daedafusion.knowledge.query.dsl.QueryParser;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.misc.Nullable;

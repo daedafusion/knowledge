@@ -1,13 +1,14 @@
 package com.daedafusion.knowledge.query.framework.providers;
 
-import com.daedafusion.ServiceIdentity;
+import com.daedafusion.service.ServiceIdentity;
 import com.daedafusion.cache.Cache;
-import com.df.argos.commons.client.exceptions.NotFoundException;
-import com.df.argos.commons.client.exceptions.ServiceErrorException;
-import com.df.argos.commons.client.exceptions.UnauthorizedException;
+import com.daedafusion.client.exceptions.NotFoundException;
+import com.daedafusion.client.exceptions.ServiceErrorException;
+import com.daedafusion.client.exceptions.UnauthorizedException;
+import com.daedafusion.knowledge.query.dsl.QueryParser;
 import com.daedafusion.sparql.Literal;
-import com.df.argos.knowledge.ontology.OntologyClient;
-import com.df.argos.knowledge.ontology.model.OntologyModel;
+import com.daedafusion.knowledge.ontology.OntologyClient;
+import com.daedafusion.knowledge.ontology.model.OntologyModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -285,7 +286,7 @@ public class WhereClauseListener extends com.daedafusion.knowledge.query.dsl.Que
     }
 
     @Override
-    public void exitLiteral(@NotNull com.df.argos.knowledge.query.core.QueryParser.LiteralContext ctx)
+    public void exitLiteral(@NotNull com.daedafusion.knowledge.query.dsl.QueryParser.LiteralContext ctx)
     {
         super.exitLiteral(ctx);
 
