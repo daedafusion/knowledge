@@ -17,6 +17,8 @@
     <modules>
         <module>query-entities</module>
         <module>query-core</module>
+        <module>query-trinity</module>
+        <!--<module>query-ontology-dsl</module>-->
     </modules>
 
     

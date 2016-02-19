@@ -4,7 +4,7 @@ import com.daedafusion.configuration.Configuration;
 import com.daedafusion.sparql.SparqlResults;
 import com.daedafusion.sf.ServiceFramework;
 import com.daedafusion.sf.ServiceFrameworkFactory;
-import com.daedafusion.knowledge.query.framework.Converter;
+import com.daedafusion.knowledge.query.framework.DSLToSparql;
 import com.daedafusion.knowledge.query.framework.QueryManager;
 import com.daedafusion.knowledge.query.framework.QueryResult;
 import com.daedafusion.knowledge.query.services.exceptions.ServiceException;
@@ -79,9 +79,9 @@ public class QueryService
     {
         ServiceFramework framework = ServiceFrameworkFactory.getInstance().getFramework();
 
-        Converter converter = framework.getService(Converter.class);
+        DSLToSparql DSLToSparql = framework.getService(DSLToSparql.class);
 
-        return converter.convert(domain, knowledgeQuery);
+        return DSLToSparql.convert(domain, knowledgeQuery);
     }
 
     @POST

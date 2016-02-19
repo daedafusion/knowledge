@@ -154,7 +154,7 @@ public class MultiQueryEngine implements Closeable
 
     public Result multiQuery(List<Query> queries) throws ExecutionException, InterruptedException
     {
-        List<ListenableFuture<Result>> futures = new ArrayList<ListenableFuture<Result>>();
+        List<ListenableFuture<Result>> futures = new ArrayList<>();
 
         for (Query q : queries)
         {
@@ -191,7 +191,7 @@ public class MultiQueryEngine implements Closeable
 
     public Result multiSelect(List<Query> queries) throws ExecutionException, InterruptedException
     {
-        List<ListenableFuture<Result>> futures = new ArrayList<ListenableFuture<Result>>();
+        List<ListenableFuture<Result>> futures = new ArrayList<>();
 
         for (Query q : queries)
         {
@@ -230,10 +230,7 @@ public class MultiQueryEngine implements Closeable
     public Result multiQuery(Query... queries) throws ExecutionException, InterruptedException
     {
         List<Query> list = new ArrayList<>();
-        for (Query q : queries)
-        {
-            list.add(q);
-        }
+        Collections.addAll(list, queries);
         return multiQuery(list);
     }
 

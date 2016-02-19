@@ -148,11 +148,6 @@
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
-                <artifactId>service-framework-core</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.daedafusion</groupId>
                 <artifactId>service-discovery</artifactId>
                 <version>1.0</version>
             </dependency>
@@ -175,6 +170,11 @@
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-identity</artifactId>
                 <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.daedafusion.knowledge</groupId>
+                <artifactId>trinity-hbase</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion.knowledge</groupId>
