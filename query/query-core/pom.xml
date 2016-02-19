@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.daedafusion.knowledge</groupId>
+        <artifactId>query</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>query-core</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.daedafusion.knowledge</groupId>
+            <artifactId>trinity-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.daedafusion.knowledge</groupId>
+            <artifactId>query-entities</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.daedafusion.knowledge</groupId>
+            <artifactId>sparql-entities</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.daedafusion</groupId>
+            <artifactId>service-framework-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.daedafusion</groupId>
+            <artifactId>configuration-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.daedafusion.knowledge</groupId>
+            <artifactId>trinity-common</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.3</version>
+                <executions>
+                    <execution>
+                        <id>antlr</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

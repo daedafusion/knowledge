@@ -14,6 +14,7 @@
     <modules>
         <module>utils</module>
         <module>trinity</module>
+        <module>query</module>
     </modules>
 
     <licenses>
@@ -144,6 +145,11 @@
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-bootstrap</artifactId>
                 <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.daedafusion</groupId>
+                <artifactId>service-framework-core</artifactId>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
@@ -278,7 +284,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>18.0</version>
+                <version>15.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
