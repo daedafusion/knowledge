@@ -22,9 +22,9 @@ public class Dictionary implements Closeable
 {
     private static final Logger log = Logger.getLogger(Dictionary.class);
 
-    protected HTableInterface resDict;
-    protected HTableInterface pDict;
-    protected HTableInterface plDict;
+    protected Table resDict;
+    protected Table pDict;
+    protected Table plDict;
 
     protected Cache<HashBytes, String> resDictCache;
     protected Cache<HashBytes, String> pDictCache;
@@ -41,18 +41,7 @@ public class Dictionary implements Closeable
         pDict = HBasePool.getInstance().getTable(Schema.PDICT);
         plDict = HBasePool.getInstance().getTable(Schema.PLDICT);
 
-        resDict.setAutoFlushTo(false);
-        pDict.setAutoFlushTo(false);
-        plDict.setAutoFlushTo(false);
-
         initializeCaches();
-    }
-
-    public void setAutoFlush(boolean autoFlush)
-    {
-        resDict.setAutoFlushTo(autoFlush);
-        pDict.setAutoFlushTo(autoFlush);
-        plDict.setAutoFlushTo(autoFlush);
     }
 
     protected void initializeCaches()
@@ -251,12 +240,12 @@ public class Dictionary implements Closeable
         try
         {
             Put put = new Put(hash.getBytes());
-            put.add(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(literal.value));
+            put.addColumn(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(literal.value));
 
             if(literal.type != null)
-                put.add(Schema.F_DICTIONARY, Schema.Q_DTYPE, Bytes.toBytes(literal.type));
+                put.addColumn(Schema.F_DICTIONARY, Schema.Q_DTYPE, Bytes.toBytes(literal.type));
             else if(literal.lang != null)
-                put.add(Schema.F_DICTIONARY, Schema.Q_DLANG, Bytes.toBytes(literal.lang));
+                put.addColumn(Schema.F_DICTIONARY, Schema.Q_DLANG, Bytes.toBytes(literal.lang));
 
             resDict.put(put);
             lDictCache.put(hash, literal);
@@ -277,7 +266,7 @@ public class Dictionary implements Closeable
         try
         {
             Put put = new Put(hash.getBytes());
-            put.add(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(predicate));
+            put.addColumn(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(predicate));
             pDict.put(put);
             pDictCache.put(hash, predicate);
         }
@@ -287,18 +276,10 @@ public class Dictionary implements Closeable
         }
     }
 
-    public void flush() throws IOException
-    {
-        resDict.flushCommits();
-        pDict.flushCommits();
-        plDict.flushCommits();
-    }
-
     @Override
     public void close() throws IOException
     {
         log.info("Closing Dictionary");
-        flush();
         resDict.close();
         pDict.close();
         plDict.close();

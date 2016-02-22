@@ -29,14 +29,6 @@ public abstract class AbstractReifiedWriter extends AbstractWriter
         pospTable = HBasePool.getInstance().getTable(Schema.R_POS_P);
         osppTable = HBasePool.getInstance().getTable(Schema.R_OSP_P);
 
-        spoTable.setAutoFlushTo(false);
-        posTable.setAutoFlushTo(false);
-        ospTable.setAutoFlushTo(false);
-
-        spopTable.setAutoFlushTo(false);
-        pospTable.setAutoFlushTo(false);
-        osppTable.setAutoFlushTo(false);
-
         dictionary = new Dictionary();
         dictionary.init();
 

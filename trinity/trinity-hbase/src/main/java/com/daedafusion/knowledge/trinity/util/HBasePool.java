@@ -2,9 +2,7 @@ package com.daedafusion.knowledge.trinity.util;
 
 import com.daedafusion.knowledge.trinity.conf.HBaseConfig;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.HConnection;
-import org.apache.hadoop.hbase.client.HConnectionManager;
-import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.log4j.Logger;
 
 import java.io.Closeable;
@@ -24,13 +22,13 @@ public class HBasePool implements Closeable
         return ourInstance;
     }
 
-    private HConnection pool;
+    private Connection pool;
 
     private HBasePool()
     {
         try
         {
-            pool = HConnectionManager.createConnection(HBaseConfig.getConfiguration());
+            pool = ConnectionFactory.createConnection(HBaseConfig.getConfiguration());
         }
         catch (IOException e)
         {
@@ -38,7 +36,7 @@ public class HBasePool implements Closeable
         }
     }
 
-    public HTableInterface getTable(TableName tn) throws IOException
+    public Table getTable(TableName tn) throws IOException
     {
         return pool.getTable(tn);
     }

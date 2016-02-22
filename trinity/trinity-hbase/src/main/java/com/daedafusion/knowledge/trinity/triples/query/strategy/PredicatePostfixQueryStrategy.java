@@ -1,22 +1,21 @@
 package com.daedafusion.knowledge.trinity.triples.query.strategy;
 
 import com.daedafusion.hbase.PostfixFilter;
-import com.daedafusion.knowledge.trinity.util.HBasePool;
-import com.daedafusion.knowledge.trinity.util.Hash;
 import com.daedafusion.knowledge.trinity.conf.Schema;
 import com.daedafusion.knowledge.trinity.triples.query.QueryContext;
+import com.daedafusion.knowledge.trinity.util.HBasePool;
+import com.daedafusion.knowledge.trinity.util.Hash;
 import com.daedafusion.knowledge.trinity.util.HashBytes;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -30,7 +29,7 @@ public class PredicatePostfixQueryStrategy extends AbstractQueryStrategy
 {
     private static final Logger log = Logger.getLogger(PredicatePostfixQueryStrategy.class);
 
-    protected HTableInterface posTable;
+    protected Table posTable;
 
     @Override
     public void init(QueryContext queryContext) throws IOException

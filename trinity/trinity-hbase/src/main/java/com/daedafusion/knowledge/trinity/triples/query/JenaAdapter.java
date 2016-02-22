@@ -22,8 +22,6 @@ public class JenaAdapter extends GraphBase
     @Override
     protected ExtendedIterator<Triple> graphBaseFind(TripleMatch tm)
     {
-        Iterator<Triple> queryResults;
-
         try
         {
             // this is very odd behavior -- clean up a bit
