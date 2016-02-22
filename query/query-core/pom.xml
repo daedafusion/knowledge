@@ -70,10 +70,6 @@
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.daedafusion.knowledge</groupId>
-            <artifactId>trinity-common</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
