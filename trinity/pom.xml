@@ -17,6 +17,6 @@
     <modules>
         <module>trinity-common</module>
         <module>trinity-hbase</module>
-        <module>trinity-hibernate</module>
+        <!--<module>trinity-hibernate</module>-->
     </modules>
 </project>

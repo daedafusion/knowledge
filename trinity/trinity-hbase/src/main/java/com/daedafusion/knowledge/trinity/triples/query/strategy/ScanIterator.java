@@ -114,7 +114,7 @@ public class ScanIterator extends NiceIterator<Triple>
         if(previousKey != null)
         {
             if(!context.getCursorMap().containsKey(currentPartition))
-                context.getCursorMap().put(currentPartition, new HashMap<String, String>());
+                context.getCursorMap().put(currentPartition, new HashMap<>());
 
             context.getCursorMap().get(currentPartition).put(rootKeys64.get(currentPartition), Base64.encodeBase64String(previousKey));
         }

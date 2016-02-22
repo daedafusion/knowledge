@@ -163,9 +163,9 @@ public class TrinitySyncUpdate extends AbstractProvider implements SyncUpdatePro
     public void delete(String subject, String partition)
     {
         // Preserve order
-        Map<HTableInterface, List<Delete>> deletes = new LinkedHashMap<>();
+        Map<Table, List<Delete>> deletes = new LinkedHashMap<>();
 
-        try(HTableInterface spoTable = HBasePool.getInstance().getTable(Schema.SPO))
+        try(Table spoTable = HBasePool.getInstance().getTable(Schema.SPO))
         {
             deletes.put(HBasePool.getInstance().getTable(Schema.SPO), new ArrayList<>());
             deletes.put(HBasePool.getInstance().getTable(Schema.POS), new ArrayList<>());
@@ -207,7 +207,7 @@ public class TrinitySyncUpdate extends AbstractProvider implements SyncUpdatePro
                 keys[5] = add(objectHash, subjectHash, predicateHash, partitionHash);
 
                 int i = 0;
-                for(Map.Entry<HTableInterface, List<Delete>> e : deletes.entrySet())
+                for(Map.Entry<Table, List<Delete>> e : deletes.entrySet())
                 {
                     e.getValue().add(new Delete(keys[i]));
                     i++;
@@ -221,12 +221,11 @@ public class TrinitySyncUpdate extends AbstractProvider implements SyncUpdatePro
         }
         finally
         {
-            for(Map.Entry<HTableInterface, List<Delete>> e : deletes.entrySet())
+            for(Map.Entry<Table, List<Delete>> e : deletes.entrySet())
             {
                 try
                 {
                     e.getKey().delete(e.getValue());
-                    e.getKey().flushCommits();
                     e.getKey().close();
                 }
                 catch (IOException e1)

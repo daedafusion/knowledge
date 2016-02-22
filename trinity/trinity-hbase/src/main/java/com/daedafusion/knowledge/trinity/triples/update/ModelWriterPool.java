@@ -26,12 +26,10 @@ public class ModelWriterPool extends GenericObjectPool<ModelWriter> implements C
 
     public static class ModelWriterObjectFactory extends BasePooledObjectFactory<ModelWriter>
     {
-        private final boolean autoFlush;
         private final boolean isReified;
 
         public ModelWriterObjectFactory(boolean autoFlush, boolean isReified)
         {
-            this.autoFlush = autoFlush;
             this.isReified = isReified;
         }
 
@@ -51,14 +49,12 @@ public class ModelWriterPool extends GenericObjectPool<ModelWriter> implements C
             {
                 ReifiedModelWriterImpl rmw = new ReifiedModelWriterImpl();
                 rmw.init();
-                rmw.setAutoFlush(autoFlush);
                 mw = rmw;
             }
             else
             {
                 ModelWriterImpl mwi = new ModelWriterImpl();
                 mwi.init();
-                mwi.setAutoFlush(autoFlush);
                 mw = mwi;
             }
             return mw;

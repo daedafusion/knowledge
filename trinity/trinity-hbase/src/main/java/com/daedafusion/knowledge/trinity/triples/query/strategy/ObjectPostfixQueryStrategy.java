@@ -11,12 +11,11 @@ import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -30,7 +29,7 @@ public class ObjectPostfixQueryStrategy extends AbstractQueryStrategy
 {
     private static final Logger log = Logger.getLogger(ObjectPostfixQueryStrategy.class);
 
-    protected HTableInterface ospTable;
+    protected Table ospTable;
 
     @Override
     public void init(QueryContext queryContext) throws IOException
