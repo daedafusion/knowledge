@@ -10,17 +10,12 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>query</artifactId>
+    <artifactId>update</artifactId>
 
     <packaging>pom</packaging>
 
     <modules>
-        <module>query-entities</module>
-        <module>query-core</module>
-        <module>query-trinity</module>
-        <module>query-ontology-dsl</module>
-        <module>query-client</module>
+        <module>update-core</module>
+        <module>update-trinity</module>
     </modules>
-
-    
 </project>
