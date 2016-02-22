@@ -431,12 +431,6 @@
                 <version>1.4.01</version>
             </dependency>
             <dependency>
-                <groupId>com.daedafusion.aniketos</groupId>
-                <artifactId>aniketos-client</artifactId>
-                <version>${aniketos.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>1.9.5</version>
@@ -629,7 +623,6 @@
         <hibernate.version>4.3.8.Final</hibernate.version>
         <hbase.version>1.1.1</hbase.version>
         <hadoop.version>2.7.1</hadoop.version>
-        <aniketos.version>1.0-SNAPSHOT</aniketos.version>
     </properties>
 
     <profiles>

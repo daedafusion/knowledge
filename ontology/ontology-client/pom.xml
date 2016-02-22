@@ -26,11 +26,6 @@
             <artifactId>httpclient</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.daedafusion.aniketos</groupId>
-            <artifactId>aniketos-client</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.daedafusion</groupId>
             <artifactId>service-discovery</artifactId>
             <scope>test</scope>
