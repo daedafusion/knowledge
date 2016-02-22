@@ -31,7 +31,7 @@ public class MultiQueryEnginePool
         @Override
         public PooledObject<MultiQueryEngine> wrap(MultiQueryEngine queryEngine)
         {
-            return new DefaultPooledObject<MultiQueryEngine>(queryEngine);
+            return new DefaultPooledObject<>(queryEngine);
         }
 
         @Override

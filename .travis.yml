@@ -12,3 +12,7 @@ addons:
 
 install: mvn install -DskipTests=true -Ptravis
 script: mvn test -Ptravis
+
+cache:
+  directories:
+    - $HOME/.m2

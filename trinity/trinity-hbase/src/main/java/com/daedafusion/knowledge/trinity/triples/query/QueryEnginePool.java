@@ -31,7 +31,7 @@ public class QueryEnginePool
         @Override
         public PooledObject<QueryEngine> wrap(QueryEngine queryEngine)
         {
-            return new DefaultPooledObject<QueryEngine>(queryEngine);
+            return new DefaultPooledObject<>(queryEngine);
         }
 
         @Override

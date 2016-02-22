@@ -14,6 +14,10 @@
     <modules>
         <module>utils</module>
         <module>trinity</module>
+        <module>ontology</module>
+        <module>partition</module>
+        <module>update</module>
+        <module>query</module>
     </modules>
 
     <licenses>
@@ -143,7 +147,7 @@
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-bootstrap</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
@@ -153,22 +157,27 @@
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-framework-core</artifactId>
-                <version>1.1-SNAPSHOT</version>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-framework-test</artifactId>
-                <version>1.1-SNAPSHOT</version>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-framework-yaml</artifactId>
-                <version>1.1-SNAPSHOT</version>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-identity</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.daedafusion.knowledge</groupId>
+                <artifactId>trinity-hbase</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion.knowledge</groupId>
@@ -278,7 +287,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>18.0</version>
+                <version>15.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
@@ -420,12 +429,6 @@
                 <groupId>xml-apis</groupId>
                 <artifactId>xml-apis</artifactId>
                 <version>1.4.01</version>
-            </dependency>
-            <dependency>
-                <groupId>com.daedafusion.aniketos</groupId>
-                <artifactId>aniketos-client</artifactId>
-                <version>${aniketos.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -620,7 +623,6 @@
         <hibernate.version>4.3.8.Final</hibernate.version>
         <hbase.version>1.1.1</hbase.version>
         <hadoop.version>2.7.1</hadoop.version>
-        <aniketos.version>1.0-SNAPSHOT</aniketos.version>
     </properties>
 
     <profiles>

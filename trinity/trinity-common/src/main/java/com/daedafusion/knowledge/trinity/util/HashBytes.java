@@ -38,7 +38,7 @@ public class HashBytes
 
     public HashBytes(byte[] bytes, int offset, int length)
     {
-        if(bytes.length != SIZEOF_HASH)
+        if(length != SIZEOF_HASH)
             throw new IllegalArgumentException("HashBytes must be 16 bytes");
 
         backing = Bytes.copy(bytes, offset, length);
