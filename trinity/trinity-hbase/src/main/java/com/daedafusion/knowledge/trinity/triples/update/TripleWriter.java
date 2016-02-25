@@ -29,7 +29,7 @@ public class TripleWriter extends AbstractWriter
      * @param subject Should be an unbracketed URI
      * @param predicate Should be an unbracketed URI
      * @param object Should either be an unbracketed URI or a
-     *               quoted literal in the form "foobar" or "foobar"@lang or "foobar"^^xsd:type or "foobar"^^<http://www.w3.org/2001/XMLSchema#string>
+     *               quoted literal in the form "foobar" or "foobar"@lang or "foobar"^^xsd:type or "foobar"^^&gt;http://www.w3.org/2001/XMLSchema#string%lt;
      * @param partition
      * @param epoch
      * @param externalSource

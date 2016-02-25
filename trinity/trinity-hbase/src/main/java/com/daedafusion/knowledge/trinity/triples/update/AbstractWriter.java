@@ -60,10 +60,10 @@ public abstract class AbstractWriter implements Closeable
     /**
      * All resources go to dictionary
      *
-     * spo => write all resources inline
-     * so => write s & o inline
-     * s => write s inline
-     * o => write o inline
+     * spo =&lt; write all resources inline
+     * so =&lt; write s &amp; o inline
+     * s =&lt; write s inline
+     * o =&lt; write o inline
      */
     protected Set<String> resourceStrategy;
 
@@ -194,7 +194,7 @@ public abstract class AbstractWriter implements Closeable
      * @param partition
      * @param subject
      * @param predicate
-     * @param object The n-triple form (e.g. "test"@en-us or "7"^^<fully_qualified_int> -- This is used for the hash
+     * @param object The n-triple form (e.g. "test"@en-us or "7"^^&gt;fully_qualified_int&lt; -- This is used for the hash
      * @param objectLiteral -- this is stored in Q_OBJECT
      * @param objectLiteralDatatype
      * @param objectLiteralLang
