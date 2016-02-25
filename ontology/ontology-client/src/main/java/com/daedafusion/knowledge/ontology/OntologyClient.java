@@ -47,6 +47,26 @@ public class OntologyClient extends AbstractClient
         mapper = new ObjectMapper();
     }
 
+    public String ping() throws URISyntaxException, ServiceErrorException
+    {
+        URIBuilder uriBuilder = new URIBuilder(baseUrl).setPath("/health/ping");
+
+        URI uri = uriBuilder.build();
+
+        HttpGet get = new HttpGet(uri);
+
+        try (CloseableHttpResponse response = client.execute(get))
+        {
+            throwForStatus(response.getStatusLine());
+
+            return EntityUtils.toString(response.getEntity());
+        }
+        catch (IOException e)
+        {
+            throw new ServiceErrorException(e.getMessage(), e);
+        }
+    }
+
     public String getOntologyRDF(String uuid) throws URISyntaxException, ServiceErrorException, NotFoundException, UnauthorizedException
     {
         URI uri = new URIBuilder(baseUrl).setPath(String.format("/ontology/%s", uuid)).build();

@@ -45,6 +45,26 @@ public class OntologyAdminClient extends AbstractClient
         mapper = new ObjectMapper();
     }
 
+    public String ping() throws URISyntaxException, ServiceErrorException
+    {
+        URIBuilder uriBuilder = new URIBuilder(baseUrl).setPath("/health/ping");
+
+        URI uri = uriBuilder.build();
+
+        HttpGet get = new HttpGet(uri);
+
+        try (CloseableHttpResponse response = client.execute(get))
+        {
+            throwForStatus(response.getStatusLine());
+
+            return EntityUtils.toString(response.getEntity());
+        }
+        catch (IOException e)
+        {
+            throw new ServiceErrorException(e.getMessage(), e);
+        }
+    }
+
     public List<OntologyMeta> getOntologyMeta() throws URISyntaxException, UnauthorizedException, NotFoundException, ServiceErrorException
     {
         URIBuilder builder = new URIBuilder(baseUrl).setPath(String.format("/admin/ontologies/meta"));

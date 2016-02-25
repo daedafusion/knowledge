@@ -32,6 +32,7 @@ public class OntologyMeta
     private String label;
 
     @Column
+    @Lob
     private String comments;
 
     public OntologyMeta()
