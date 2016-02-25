@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.ws.rs.*;
@@ -29,6 +30,48 @@ import java.util.*;
 public class QueryService
 {
     private static final Logger log = Logger.getLogger(QueryService.class);
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(CustomHeaders.SPARQL_RESULTS)
+    public SparqlResults sparqlQuery(Query query)
+    {
+        ServiceFramework framework = ServiceFrameworkFactory.getInstance().getFramework();
+
+        QueryManager queryManager = framework.getService(QueryManager.class);
+
+        if(query.getPartitions().isEmpty())
+        {
+            log.warn("Query with no partitions");
+            throw new BadRequestException("No partitions specified");
+        }
+
+        QueryResult result;
+        SparqlResults sr;
+
+        try
+        {
+            // This might be better handled as a queryType()
+            if (StringUtils.containsIgnoreCase(query.getQuery(), "construct"))
+            {
+                result = queryManager.query(query);
+                sr = SparqlResultsRenderer.renderModel(result);
+            }
+            else
+            {
+                result = queryManager.select(query);
+                sr = SparqlResultsRenderer.renderResultSet(result);
+            }
+        }
+        catch (JsonProcessingException e)
+        {
+            log.error("", e);
+            throw new ServiceException();
+        }
+
+
+        return sr;
+    }
 
     @POST
     @Path("{domain}")
@@ -47,20 +90,28 @@ public class QueryService
 
         QueryManager queryManager = framework.getService(QueryManager.class);
 
-        QueryResult result;
-
         if(query.getPartitions().isEmpty())
         {
             log.warn("Query with no partitions");
             throw new BadRequestException("No partitions specified");
         }
 
-        result = queryManager.query(query);
+        QueryResult result;
+        SparqlResults sr;
 
-        SparqlResults sr = null;
         try
         {
-            sr = SparqlResultsRenderer.renderModel(result);
+            // This might be better handled as a queryType()
+            if (StringUtils.containsIgnoreCase(query.getQuery(), "construct"))
+            {
+                result = queryManager.query(query);
+                sr = SparqlResultsRenderer.renderModel(result);
+            }
+            else
+            {
+                result = queryManager.select(query);
+                sr = SparqlResultsRenderer.renderResultSet(result);
+            }
         }
         catch (JsonProcessingException e)
         {
