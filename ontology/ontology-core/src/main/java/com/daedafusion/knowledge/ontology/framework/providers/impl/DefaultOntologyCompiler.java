@@ -18,16 +18,16 @@ import java.util.Set;
 /**
  * Created by mphilpot on 2/19/16.
  */
-public class DefaultOntologyComplier extends AbstractService<OntologyCompilerProvider> implements OntologyCompiler
+public class DefaultOntologyCompiler extends AbstractService<OntologyCompilerProvider> implements OntologyCompiler
 {
-    private static final Logger log = Logger.getLogger(DefaultOntologyComplier.class);
+    private static final Logger log = Logger.getLogger(DefaultOntologyCompiler.class);
 
     private String PREFIX_ANNOTATION = "http://www.daedafusion.com/editor_annotation#namespacePrefix";
     private String ABSTRACT_ANNOTATION = "http://www.daedafusion.com/editor_annotation#abstract";
     private String AUTO_ANNOTATION = "http://www.daedafusion.com/editor_annotation#autoGenerate";
     private String REIFIED_DOMAIN_ANNOTATION = "http://www.daedafusion.com/editor_annotation#reifiedDomain";
 
-    public DefaultOntologyComplier()
+    public DefaultOntologyCompiler()
     {
         addLifecycleListener(new LifecycleListener()
         {
