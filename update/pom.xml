@@ -17,5 +17,6 @@
     <modules>
         <module>update-core</module>
         <module>update-trinity</module>
+        <module>update-client</module>
     </modules>
 </project>
