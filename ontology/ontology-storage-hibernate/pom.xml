@@ -20,6 +20,7 @@
         <dependency>
             <groupId>com.daedafusion.knowledge</groupId>
             <artifactId>ontology-core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
