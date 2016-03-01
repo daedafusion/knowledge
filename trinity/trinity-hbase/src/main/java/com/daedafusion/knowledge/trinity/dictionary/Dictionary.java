@@ -6,13 +6,16 @@ import com.daedafusion.knowledge.trinity.util.HBasePool;
 import com.daedafusion.knowledge.trinity.util.Hash;
 import com.daedafusion.knowledge.trinity.util.Cache;
 import com.daedafusion.knowledge.trinity.conf.Schema;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -22,9 +25,14 @@ public class Dictionary implements Closeable
 {
     private static final Logger log = Logger.getLogger(Dictionary.class);
 
-    protected Table resDict;
-    protected Table pDict;
-    protected Table plDict;
+    protected Map<TableName, Table> tables;
+    protected Map<TableName, BufferedMutator> mutators;
+
+//    protected Table resDict;
+//    protected Table pDict;
+//    protected Table plDict;
+
+    protected boolean buffered;
 
     protected Cache<HashBytes, String> resDictCache;
     protected Cache<HashBytes, String> pDictCache;
@@ -32,14 +40,21 @@ public class Dictionary implements Closeable
 
     public Dictionary()
     {
-
+        tables = new HashMap<>();
+        mutators = new HashMap<>();
     }
 
-    public void init() throws IOException
+    public void init(boolean buffered) throws IOException
     {
-        resDict = HBasePool.getInstance().getTable(Schema.RESDICT);
-        pDict = HBasePool.getInstance().getTable(Schema.PDICT);
-        plDict = HBasePool.getInstance().getTable(Schema.PLDICT);
+        this.buffered = buffered;
+
+        tables.put(Schema.RESDICT, HBasePool.getInstance().getTable(Schema.RESDICT));
+        tables.put(Schema.PDICT, HBasePool.getInstance().getTable(Schema.PDICT));
+        tables.put(Schema.PLDICT, HBasePool.getInstance().getTable(Schema.PLDICT));
+
+        mutators.put(Schema.RESDICT, HBasePool.getInstance().getBufferedMutator(Schema.RESDICT));
+        mutators.put(Schema.PDICT, HBasePool.getInstance().getBufferedMutator(Schema.PDICT));
+        mutators.put(Schema.PLDICT, HBasePool.getInstance().getBufferedMutator(Schema.PLDICT));
 
         initializeCaches();
     }
@@ -52,14 +67,26 @@ public class Dictionary implements Closeable
         lDictCache = GlobalDictionaryCache.getInstance().getLiteralCache();
     }
 
+    private void applyPut(TableName name, Put put) throws IOException
+    {
+        if(buffered)
+        {
+            mutators.get(name).mutate(put);
+        }
+        else
+        {
+            tables.get(name).put(put);
+        }
+    }
+
     public void setPredicateLiteral(HashBytes predicateHash, String literal)
     {
         // TODO may need configurable logic to limit size of key by truncating literal
         Put put = new Put(Bytes.add(predicateHash.getBytes(), Bytes.toBytes(literal)));
-        put.add(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(literal));
+        put.addColumn(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(literal));
         try
         {
-            plDict.put(put);
+            applyPut(Schema.PLDICT, put);
         }
         catch (IOException e)
         {
@@ -92,7 +119,7 @@ public class Dictionary implements Closeable
 
         int length = predicateHash.getBytes().length;
 
-        try(ResultScanner scanner = plDict.getScanner(scan))
+        try(ResultScanner scanner = tables.get(Schema.PLDICT).getScanner(scan))
         {
             for (Result row : scanner)
             {
@@ -148,7 +175,7 @@ public class Dictionary implements Closeable
         {
             try
             {
-                Result result = resDict.get(new Get(hash.getBytes()));
+                Result result = tables.get(Schema.RESDICT).get(new Get(hash.getBytes()));
                 resource = Bytes.toString(result.getValue(Schema.F_DICTIONARY, Schema.Q_DVALUE));
                 resDictCache.put(hash, resource);
             }
@@ -170,7 +197,7 @@ public class Dictionary implements Closeable
             try
             {
                 literal = new Literal();
-                Result result = resDict.get(new Get(hash.getBytes()));
+                Result result = tables.get(Schema.RESDICT).get(new Get(hash.getBytes()));
                 literal.value = Bytes.toString(result.getValue(Schema.F_DICTIONARY, Schema.Q_DVALUE));
 
                 if(result.containsColumn(Schema.F_DICTIONARY, Schema.Q_DTYPE))
@@ -197,7 +224,7 @@ public class Dictionary implements Closeable
         {
             try
             {
-                Result result = pDict.get(new Get(hash.getBytes()));
+                Result result = tables.get(Schema.PDICT).get(new Get(hash.getBytes()));
                 predicate = Bytes.toString(result.getValue(Schema.F_DICTIONARY, Schema.Q_DVALUE));
                 pDictCache.put(hash, predicate);
             }
@@ -220,8 +247,8 @@ public class Dictionary implements Closeable
         try
         {
             Put put = new Put(hash.getBytes());
-            put.add(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(resource));
-            resDict.put(put);
+            put.addColumn(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(resource));
+            applyPut(Schema.RESDICT, put);
             resDictCache.put(hash, resource);
         }
         catch (IOException e)
@@ -247,7 +274,7 @@ public class Dictionary implements Closeable
             else if(literal.lang != null)
                 put.addColumn(Schema.F_DICTIONARY, Schema.Q_DLANG, Bytes.toBytes(literal.lang));
 
-            resDict.put(put);
+            applyPut(Schema.RESDICT, put);
             lDictCache.put(hash, literal);
         }
         catch (IOException e)
@@ -267,7 +294,7 @@ public class Dictionary implements Closeable
         {
             Put put = new Put(hash.getBytes());
             put.addColumn(Schema.F_DICTIONARY, Schema.Q_DVALUE, Bytes.toBytes(predicate));
-            pDict.put(put);
+            applyPut(Schema.PDICT, put);
             pDictCache.put(hash, predicate);
         }
         catch (IOException e)
@@ -280,9 +307,15 @@ public class Dictionary implements Closeable
     public void close() throws IOException
     {
         log.info("Closing Dictionary");
-        resDict.close();
-        pDict.close();
-        plDict.close();
+
+        for(Map.Entry<TableName, Table> entry : tables.entrySet())
+        {
+            entry.getValue().close();
+        }
+        for(Map.Entry<TableName, BufferedMutator> entry : mutators.entrySet())
+        {
+            entry.getValue().close();
+        }
     }
 
     public boolean isCachedLiteral(HashBytes objectHash)

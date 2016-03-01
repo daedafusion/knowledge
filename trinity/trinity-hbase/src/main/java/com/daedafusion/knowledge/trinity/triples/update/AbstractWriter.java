@@ -8,10 +8,9 @@ import com.daedafusion.knowledge.trinity.util.Hash;
 import com.daedafusion.knowledge.trinity.util.HashBytes;
 import com.daedafusion.sparql.Literal;
 import org.apache.commons.codec.Charsets;
-import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.HTableInterface;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Table;
+import org.apache.commons.collections.Buffer;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
@@ -48,14 +47,13 @@ public abstract class AbstractWriter implements Closeable
 
     }
 
-    protected Table spoTable;
-    protected Table posTable;
-    protected Table ospTable;
-    protected Table spopTable;
-    protected Table pospTable;
-    protected Table osppTable;
+    protected Map<TableName, Table> tables;
+
+    protected Map<TableName, BufferedMutator> mutators;
 
     protected Dictionary dictionary;
+
+    protected boolean buffered;
 
     /**
      * All resources go to dictionary
@@ -69,18 +67,28 @@ public abstract class AbstractWriter implements Closeable
 
     protected Map<String, HashBytes> partitionCache;
 
-    public void init() throws IOException
+    public void init(boolean buffered) throws IOException
     {
-        spoTable = HBasePool.getInstance().getTable(Schema.SPO);
-        posTable = HBasePool.getInstance().getTable(Schema.POS);
-        ospTable = HBasePool.getInstance().getTable(Schema.OSP);
+        this.buffered = buffered;
+        tables = new HashMap<>();
+        mutators = new HashMap<>();
 
-        spopTable = HBasePool.getInstance().getTable(Schema.SPO_P);
-        pospTable = HBasePool.getInstance().getTable(Schema.POS_P);
-        osppTable = HBasePool.getInstance().getTable(Schema.OSP_P);
+        tables.put(Schema.SPO, HBasePool.getInstance().getTable(Schema.SPO));
+        tables.put(Schema.POS, HBasePool.getInstance().getTable(Schema.POS));
+        tables.put(Schema.OSP, HBasePool.getInstance().getTable(Schema.OSP));
+        tables.put(Schema.SPO_P, HBasePool.getInstance().getTable(Schema.SPO_P));
+        tables.put(Schema.POS_P, HBasePool.getInstance().getTable(Schema.POS_P));
+        tables.put(Schema.OSP_P, HBasePool.getInstance().getTable(Schema.OSP_P));
+
+        mutators.put(Schema.SPO, HBasePool.getInstance().getBufferedMutator(Schema.SPO));
+        mutators.put(Schema.POS, HBasePool.getInstance().getBufferedMutator(Schema.POS));
+        mutators.put(Schema.OSP, HBasePool.getInstance().getBufferedMutator(Schema.OSP));
+        mutators.put(Schema.SPO_P, HBasePool.getInstance().getBufferedMutator(Schema.SPO_P));
+        mutators.put(Schema.POS_P, HBasePool.getInstance().getBufferedMutator(Schema.POS_P));
+        mutators.put(Schema.OSP_P, HBasePool.getInstance().getBufferedMutator(Schema.OSP_P));
 
         dictionary = new Dictionary();
-        dictionary.init();
+        dictionary.init(buffered);
 
         resourceStrategy = new HashSet<>();
 
@@ -106,13 +114,13 @@ public abstract class AbstractWriter implements Closeable
             partitionCache.put(partition, partitionHash);
         }
 
-        Map<Table, List<Delete>> deletes = new HashMap<>();
-        deletes.put(spoTable, new ArrayList<>());
-        deletes.put(posTable, new ArrayList<>());
-        deletes.put(ospTable, new ArrayList<>());
-        deletes.put(spopTable, new ArrayList<>());
-        deletes.put(pospTable, new ArrayList<>());
-        deletes.put(osppTable, new ArrayList<>());
+        Map<TableName, List<Delete>> deletes = new HashMap<>();
+        deletes.put(Schema.SPO, new ArrayList<>());
+        deletes.put(Schema.POS, new ArrayList<>());
+        deletes.put(Schema.OSP, new ArrayList<>());
+        deletes.put(Schema.SPO_P, new ArrayList<>());
+        deletes.put(Schema.POS_P, new ArrayList<>());
+        deletes.put(Schema.OSP_P, new ArrayList<>());
 
         for(T t : triples)
         {
@@ -128,7 +136,7 @@ public abstract class AbstractWriter implements Closeable
                             objectHash.getBytes()
                     )
             );
-            deletes.get(spoTable).add(delete);
+            deletes.get(Schema.SPO).add(delete);
 
             delete = buildDelete(
                     buildKey(
@@ -138,7 +146,7 @@ public abstract class AbstractWriter implements Closeable
                             subjectHash.getBytes()
                     )
             );
-            deletes.get(posTable).add(delete);
+            deletes.get(Schema.POS).add(delete);
 
             delete = buildDelete(
                     buildKey(
@@ -148,7 +156,7 @@ public abstract class AbstractWriter implements Closeable
                             predicateHash.getBytes()
                     )
             );
-            deletes.get(ospTable).add(delete);
+            deletes.get(Schema.OSP).add(delete);
 
             delete = buildDelete(
                     buildKey(
@@ -158,7 +166,7 @@ public abstract class AbstractWriter implements Closeable
                             partitionHash.getBytes()
                     )
             );
-            deletes.get(spopTable).add(delete);
+            deletes.get(Schema.SPO_P).add(delete);
 
             delete = buildDelete(
                     buildKey(
@@ -168,7 +176,7 @@ public abstract class AbstractWriter implements Closeable
                             partitionHash.getBytes()
                     )
             );
-            deletes.get(pospTable).add(delete);
+            deletes.get(Schema.POS_P).add(delete);
 
             delete = buildDelete(
                     buildKey(
@@ -178,12 +186,31 @@ public abstract class AbstractWriter implements Closeable
                             partitionHash.getBytes()
                     )
             );
-            deletes.get(osppTable).add(delete);
+            deletes.get(Schema.OSP_P).add(delete);
         }
 
-        for(Map.Entry<Table, List<Delete>> e : deletes.entrySet())
+        for(Map.Entry<TableName, List<Delete>> e : deletes.entrySet())
         {
-            e.getKey().delete(e.getValue());
+            if(buffered)
+            {
+                mutators.get(e.getKey()).mutate(e.getValue());
+            }
+            else
+            {
+                tables.get(e.getKey()).delete(e.getValue());
+            }
+        }
+    }
+
+    private void applyPut(TableName name, Put put) throws IOException
+    {
+        if(buffered)
+        {
+            mutators.get(name).mutate(put);
+        }
+        else
+        {
+            tables.get(name).put(put);
         }
     }
 
@@ -246,7 +273,7 @@ public abstract class AbstractWriter implements Closeable
                 ingestId.getBytes(StandardCharsets.UTF_8)
         );
         addResources(put, subject, predicate, object, objectLiteral, objectLiteralDatatype, objectLiteralLang, partition);
-        spoTable.put(put);
+        applyPut(Schema.SPO, put);
 
         put = buildPut(
                 buildKey(
@@ -260,7 +287,7 @@ public abstract class AbstractWriter implements Closeable
                 ingestId.getBytes(StandardCharsets.UTF_8)
         );
         addResources(put, subject, predicate, object, objectLiteral, objectLiteralDatatype, objectLiteralLang, partition);
-        posTable.put(put);
+        applyPut(Schema.POS, put);
 
         put = buildPut(
                 buildKey(
@@ -274,7 +301,7 @@ public abstract class AbstractWriter implements Closeable
                 ingestId.getBytes(StandardCharsets.UTF_8)
         );
         addResources(put, subject, predicate, object, objectLiteral, objectLiteralDatatype, objectLiteralLang, partition);
-        ospTable.put(put);
+        applyPut(Schema.OSP, put);
 
         // Write post fix tables
         put = buildPut(
@@ -289,7 +316,7 @@ public abstract class AbstractWriter implements Closeable
                 ingestId.getBytes(StandardCharsets.UTF_8)
         );
         addResources(put, subject, predicate, object, objectLiteral, objectLiteralDatatype, objectLiteralLang, partition);
-        spopTable.put(put);
+        applyPut(Schema.SPO_P, put);
 
         put = buildPut(
                 buildKey(
@@ -303,7 +330,7 @@ public abstract class AbstractWriter implements Closeable
                 ingestId.getBytes(StandardCharsets.UTF_8)
         );
         addResources(put, subject, predicate, object, objectLiteral, objectLiteralDatatype, objectLiteralLang, partition);
-        pospTable.put(put);
+        applyPut(Schema.POS_P, put);
 
         put = buildPut(
                 buildKey(
@@ -317,7 +344,7 @@ public abstract class AbstractWriter implements Closeable
                 ingestId.getBytes(StandardCharsets.UTF_8)
         );
         addResources(put, subject, predicate, object, objectLiteral, objectLiteralDatatype, objectLiteralLang, partition);
-        osppTable.put(put);
+        applyPut(Schema.OSP_P, put);
     }
 
     /**
@@ -366,7 +393,7 @@ public abstract class AbstractWriter implements Closeable
                 ingestId.getBytes(StandardCharsets.UTF_8)
         );
         addResources(put, subject, predicate, object, partition);
-        spoTable.put(put);
+        applyPut(Schema.SPO, put);
 
         put = buildPut(
                 buildKey(
@@ -380,7 +407,7 @@ public abstract class AbstractWriter implements Closeable
                 ingestId.getBytes(StandardCharsets.UTF_8)
         );
         addResources(put, subject, predicate, object, partition);
-        posTable.put(put);
+        applyPut(Schema.POS, put);
 
         put = buildPut(
                 buildKey(
@@ -394,7 +421,7 @@ public abstract class AbstractWriter implements Closeable
                 ingestId.getBytes(StandardCharsets.UTF_8)
         );
         addResources(put, subject, predicate, object, partition);
-        ospTable.put(put);
+        applyPut(Schema.OSP, put);
 
         // Write post fix tables
         put = buildPut(
@@ -409,7 +436,7 @@ public abstract class AbstractWriter implements Closeable
                 ingestId.getBytes(StandardCharsets.UTF_8)
         );
         addResources(put, subject, predicate, object, partition);
-        spopTable.put(put);
+        applyPut(Schema.SPO_P, put);
 
         put = buildPut(
                 buildKey(
@@ -423,7 +450,7 @@ public abstract class AbstractWriter implements Closeable
                 ingestId.getBytes(StandardCharsets.UTF_8)
         );
         addResources(put, subject, predicate, object, partition);
-        pospTable.put(put);
+        applyPut(Schema.POS_P, put);
 
         put = buildPut(
                 buildKey(
@@ -437,7 +464,7 @@ public abstract class AbstractWriter implements Closeable
                 ingestId.getBytes(StandardCharsets.UTF_8)
         );
         addResources(put, subject, predicate, object, partition);
-        osppTable.put(put);
+        applyPut(Schema.OSP_P, put);
     }
 
     private byte[] buildKey(byte[] zero, byte[] first, byte[] second, byte[] third)
@@ -504,12 +531,17 @@ public abstract class AbstractWriter implements Closeable
     public void close() throws IOException
     {
         log.info("Closing AbstractWriter");
-        spoTable.close();
-        posTable.close();
-        ospTable.close();
-        spopTable.close();
-        pospTable.close();
-        osppTable.close();
+
+        for(Map.Entry<TableName, Table> entry : tables.entrySet())
+        {
+            entry.getValue().close();
+        }
+
+        for(Map.Entry<TableName, BufferedMutator> entry : mutators.entrySet())
+        {
+            entry.getValue().close();
+        }
+
         dictionary.close();
     }
 }

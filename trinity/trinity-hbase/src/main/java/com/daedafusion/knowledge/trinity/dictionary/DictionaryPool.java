@@ -26,7 +26,7 @@ public class DictionaryPool
         public Dictionary create() throws Exception
         {
             Dictionary dict = new Dictionary();
-            dict.init();
+            dict.init(true);
 
             return dict;
         }

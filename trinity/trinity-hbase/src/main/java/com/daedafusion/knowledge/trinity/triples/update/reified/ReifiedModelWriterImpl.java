@@ -21,10 +21,10 @@ public class ReifiedModelWriterImpl extends AbstractReifiedWriter implements Mod
 
     }
 
-    public static ModelWriter getInstance() throws IOException
+    public static ModelWriter getInstance(boolean buffered) throws IOException
     {
         ReifiedModelWriterImpl writer = new ReifiedModelWriterImpl();
-        writer.init();
+        writer.init(buffered);
 
         return writer;
     }

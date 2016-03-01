@@ -16,10 +16,10 @@ public class TripleWriter extends AbstractWriter
 
     }
 
-    public static TripleWriter getInstance() throws IOException
+    public static TripleWriter getInstance(boolean buffered) throws IOException
     {
         TripleWriter writer = new TripleWriter();
-        writer.init();
+        writer.init(buffered);
 
         return writer;
     }

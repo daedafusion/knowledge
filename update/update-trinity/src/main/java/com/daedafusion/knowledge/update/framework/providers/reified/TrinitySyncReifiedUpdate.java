@@ -35,7 +35,7 @@ public class TrinitySyncReifiedUpdate extends AbstractProvider implements SyncUp
 
     public TrinitySyncReifiedUpdate()
     {
-        pool = new ModelWriterPool(new ModelWriterPool.ModelWriterObjectFactory(true, true));
+        pool = new ModelWriterPool(new ModelWriterPool.ModelWriterObjectFactory(false, true));
         counter = new AtomicLong(0L);
 
         addLifecycleListener(new LifecycleListener()

@@ -8,5 +8,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 public interface AsyncUpdate
 {
     void update(String namedGraph, Model model, Long epoch, String partition, String externalSource, String ingestId);
+    void update(String namedGraph, String nTripleLine, Long epoch, String partition, String externalSource, String ingestId);
     void truncate(String namedGraph, String partition);
 }

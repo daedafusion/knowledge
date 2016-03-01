@@ -1,15 +1,17 @@
 package com.daedafusion.knowledge.update.services;
 
+import com.daedafusion.knowledge.update.services.exceptions.ServiceException;
 import com.daedafusion.sf.ServiceFramework;
 import com.daedafusion.sf.ServiceFrameworkFactory;
 import com.daedafusion.knowledge.update.framework.AsyncUpdate;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by mphilpot on 8/18/14.
@@ -21,7 +23,7 @@ public class AsyncUpdateService
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
-    public void ntripleUpdate(String ntriples,
+    public void ntripleUpdate(InputStream ntriples,
                               @HeaderParam("x-update-epoch") Long epoch,
                               @HeaderParam("x-update-partition") String partition,
                               @HeaderParam("x-update-source") String externalSource,
@@ -32,16 +34,43 @@ public class AsyncUpdateService
 
         AsyncUpdate async = framework.getService(AsyncUpdate.class);
 
-        Model model = ModelFactory.createDefaultModel();
+        try
+        {
+            StringBuffer buffer = new StringBuffer();
+            int lines = 0;
+            LineIterator iter = IOUtils.lineIterator(ntriples, "UTF-8");
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(ntriples.getBytes());
+            while(iter.hasNext())
+            {
+                lines++;
+                buffer.append(iter.nextLine());
 
-        model.read(bais, null, "N-TRIPLE");
+                if(lines % 5000 == 0)
+                {
+                    if (isReified)
+                        async.update("reified", buffer.toString(), epoch, partition, externalSource, ingestId);
+                    else
+                        async.update("default", buffer.toString(), epoch, partition, externalSource, ingestId);
 
-        if(isReified)
-            async.update("reified", model, epoch, partition, externalSource, ingestId);
-        else
-            async.update("default", model, epoch, partition, externalSource, ingestId);
+                    buffer = new StringBuffer();
+                }
+            }
+
+            if(buffer.length() != 0)
+            {
+                if (isReified)
+                    async.update("reified", buffer.toString(), epoch, partition, externalSource, ingestId);
+                else
+                    async.update("default", buffer.toString(), epoch, partition, externalSource, ingestId);
+            }
+
+            log.info(String.format("Wrote %d lines", lines));
+        }
+        catch(IOException e)
+        {
+            log.error("", e);
+            throw new ServiceException("Error reading update");
+        }
     }
 
     @POST

@@ -6,9 +6,11 @@ import com.daedafusion.knowledge.trinity.triples.update.ModelWriter;
 import com.daedafusion.knowledge.trinity.triples.update.ModelWriterPool;
 import com.daedafusion.knowledge.update.framework.providers.AsyncUpdateProvider;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -25,7 +27,7 @@ public class TrinityAsyncReifiedUpdate extends AbstractProvider implements Async
 
     public TrinityAsyncReifiedUpdate()
     {
-        pool = new ModelWriterPool(new ModelWriterPool.ModelWriterObjectFactory(false, true));
+        pool = new ModelWriterPool(new ModelWriterPool.ModelWriterObjectFactory(true, true));
         counter = new AtomicLong(0L);
 
         addLifecycleListener(new LifecycleListener()
@@ -100,6 +102,17 @@ public class TrinityAsyncReifiedUpdate extends AbstractProvider implements Async
                 }
             }
         }
+    }
+
+    @Override
+    public void update(String nTripleLine, Long epoch, String partition, String externalSource, String ingestId)
+    {
+        // Use Jena for validation... could do this manually and be more efficient
+        Model model = ModelFactory.createDefaultModel();
+        ByteArrayInputStream bais = new ByteArrayInputStream(nTripleLine.getBytes());
+        model.read(bais, null, "N-TRIPLE");
+
+        update(model, epoch, partition, externalSource, ingestId);
     }
 
     @Override
