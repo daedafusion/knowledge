@@ -1,5 +1,6 @@
 package com.daedafusion.knowledge.update.services;
 
+import com.daedafusion.configuration.Configuration;
 import com.daedafusion.knowledge.update.services.exceptions.ServiceException;
 import com.daedafusion.sf.ServiceFramework;
 import com.daedafusion.sf.ServiceFrameworkFactory;
@@ -36,6 +37,7 @@ public class AsyncUpdateService
 
         try
         {
+            int bufferSize = Configuration.getInstance().getInteger("updateBufferSize", 10000);
             StringBuffer buffer = new StringBuffer();
             int lines = 0;
             LineIterator iter = IOUtils.lineIterator(ntriples, "UTF-8");
@@ -45,7 +47,7 @@ public class AsyncUpdateService
                 lines++;
                 buffer.append(iter.nextLine());
 
-                if(lines % 5000 == 0)
+                if(lines % bufferSize == 0)
                 {
                     if (isReified)
                         async.update("reified", buffer.toString(), epoch, partition, externalSource, ingestId);

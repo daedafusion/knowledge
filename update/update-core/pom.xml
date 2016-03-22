@@ -18,6 +18,10 @@
             <artifactId>security-framework</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.daedafusion</groupId>
+            <artifactId>configuration-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
         </dependency>
