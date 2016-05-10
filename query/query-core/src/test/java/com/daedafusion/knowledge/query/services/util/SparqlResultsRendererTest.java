@@ -37,7 +37,7 @@ public class SparqlResultsRendererTest
 
         assertThat(model.size(), is(5L));
 
-        Query query = QueryFactory.create("select ?o where { ?s ?p ?o . }");
+        Query query = QueryFactory.create("select ?l where { ?s ?p ?l . }");
 
         try(QueryExecution qe = QueryExecutionFactory.create(query, model))
         {
@@ -51,6 +51,8 @@ public class SparqlResultsRendererTest
             ObjectMapper mapper = new ObjectMapper();
 
             String json = mapper.writeValueAsString(sr);
+
+//            FileUtils.writeStringToFile(new File("out.json"), json);
 
             assertThat(json, is(IOUtils.toString(SparqlResultsRendererTest.class.getClassLoader().getResourceAsStream("select_literals.json"))));
         }

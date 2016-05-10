@@ -29,12 +29,12 @@ public class SparqlResultsRenderer
         SparqlResults results = new SparqlResults();
         results.setResults(new Results());
         results.setHead(new Head());
-        results.getHead().setVars(new ArrayList<String>());
+        results.getHead().setVars(new ArrayList<>());
 //        results.getHead().getVars().add("s");
 //        results.getHead().getVars().add("p");
 //        results.getHead().getVars().add("o");
 //        results.getHead().getVars().add("?");
-        results.getHead().setLinks(new HashMap<String, String>());
+        results.getHead().setLinks(new HashMap<>());
         results.getHead().getLinks().put("cursor", mapper.writeValueAsString(queryResult.getCursor()));
 
         Set<String> vars = new HashSet<>();
@@ -51,20 +51,22 @@ public class SparqlResultsRenderer
 
                 for(String v : set.getResultVars())
                 {
-                    binding.put(v, new HashMap<String, String>());
+                    binding.put(v, new HashMap<>());
 
                     if(sol.get(v).isLiteral())
                     {
                         binding.get(v).put("type", "literal");
                         binding.get(v).put("value", sol.get(v).asLiteral().getLexicalForm());
 
-                        if(sol.get(v).asLiteral().getDatatypeURI() != null)
+                        if(sol.get(v).asLiteral().getDatatypeURI() != null &&
+                                !sol.get(v).asLiteral().getDatatypeURI().equals(""))
                         {
                             binding.get(v).put("datatype", sol.get(v).asLiteral().getDatatypeURI());
                         }
-                        if(sol.get(v).asLiteral().getLanguage() != null)
+                        if(sol.get(v).asLiteral().getLanguage() != null &&
+                                !sol.get(v).asLiteral().getLanguage().equals(""))
                         {
-                            binding.get("o").put("xml:lang", sol.get(v).asLiteral().getLanguage());
+                            binding.get(v).put("xml:lang", sol.get(v).asLiteral().getLanguage());
                         }
                     }
                     else if(sol.get(v).isResource())
@@ -90,12 +92,12 @@ public class SparqlResultsRenderer
         SparqlResults results = new SparqlResults();
         results.setResults(new Results());
         results.setHead(new Head());
-        results.getHead().setVars(new ArrayList<String>());
+        results.getHead().setVars(new ArrayList<>());
         results.getHead().getVars().add("s");
         results.getHead().getVars().add("p");
         results.getHead().getVars().add("o");
         results.getHead().getVars().add("?");
-        results.getHead().setLinks(new HashMap<String, String>());
+        results.getHead().setLinks(new HashMap<>());
         results.getHead().getLinks().put("cursor", mapper.writeValueAsString(queryResult.getCursor()));
 
         for(Statement statement : queryResult.getModel().listStatements().toSet())
@@ -116,10 +118,10 @@ public class SparqlResultsRenderer
             }
 
             Map<String, Map<String, String>> binding = new HashMap<>();
-            binding.put("s", new HashMap<String, String>());
-            binding.put("p", new HashMap<String, String>());
-            binding.put("o", new HashMap<String, String>());
-            binding.put("?", new HashMap<String, String>());
+            binding.put("s", new HashMap<>());
+            binding.put("p", new HashMap<>());
+            binding.put("o", new HashMap<>());
+            binding.put("?", new HashMap<>());
 
             if(statement.getSubject().isAnon())
             {
@@ -145,11 +147,13 @@ public class SparqlResultsRenderer
                 binding.get("o").put("type", "literal");
                 binding.get("o").put("value", statement.getObject().asLiteral().getLexicalForm());
 
-                if(statement.getObject().asLiteral().getDatatypeURI() != null)
+                if(statement.getObject().asLiteral().getDatatypeURI() != null &&
+                        !statement.getObject().asLiteral().getDatatypeURI().equals(""))
                 {
                     binding.get("o").put("datatype", statement.getObject().asLiteral().getDatatypeURI());
                 }
-                if(statement.getObject().asLiteral().getLanguage() != null)
+                if(statement.getObject().asLiteral().getLanguage() != null &&
+                        !statement.getObject().asLiteral().getLanguage().equals(""))
                 {
                     binding.get("o").put("xml:lang", statement.getObject().asLiteral().getLanguage());
                 }
