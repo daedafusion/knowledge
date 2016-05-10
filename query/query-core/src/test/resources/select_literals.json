@@ -1,0 +1,1 @@
+{"head":{"vars":["l"],"links":{"cursor":"null"}},"results":{"bindings":[{"l":{"type":"uri","value":"https://test.com/test#SampleB"}},{"l":{"datatype":"https://test.com/test#customType","type":"literal","value":"abc"}},{"l":{"xml:lang":"us-en","type":"literal","value":"abc"}},{"l":{"type":"literal","value":"abc"}},{"l":{"type":"literal","value":"1"}}]}}

@@ -1,0 +1,5 @@
+<https://test.com/test#SampleA> <https://test.com/test#hasInteger> "1" .
+<https://test.com/test#SampleA> <https://test.com/test#hasString> "abc" .
+<https://test.com/test#SampleA> <https://test.com/test#hasStringLang> "abc"@us-en .
+<https://test.com/test#SampleA> <https://test.com/test#hasStringType> "abc"^^<https://test.com/test#customType> .
+<https://test.com/test#SampleA> <https://test.com/test#hasRelationship> <https://test.com/test#SampleB> .
