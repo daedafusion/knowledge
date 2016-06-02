@@ -3,10 +3,9 @@ package com.daedafusion.knowledge.ontology.framework.providers.impl;
 import com.daedafusion.knowledge.ontology.ClassDescription;
 import com.daedafusion.knowledge.ontology.OntologyDescription;
 import com.daedafusion.knowledge.ontology.PropertyDescription;
-import com.daedafusion.knowledge.ontology.framework.OntologyCompiler;
 import com.daedafusion.knowledge.ontology.framework.providers.OntologyCompilerProvider;
 import com.daedafusion.knowledge.ontology.model.OntologyModel;
-import com.daedafusion.sf.AbstractService;
+import com.daedafusion.sf.AbstractProvider;
 import com.daedafusion.sf.LifecycleListener;
 import com.daedafusion.sparql.Literal;
 import org.apache.log4j.Logger;
@@ -18,7 +17,7 @@ import java.util.Set;
 /**
  * Created by mphilpot on 2/19/16.
  */
-public class DefaultOntologyCompiler extends AbstractService<OntologyCompilerProvider> implements OntologyCompiler
+public class DefaultOntologyCompiler extends AbstractProvider implements OntologyCompilerProvider
 {
     private static final Logger log = Logger.getLogger(DefaultOntologyCompiler.class);
 
@@ -168,11 +167,5 @@ public class DefaultOntologyCompiler extends AbstractService<OntologyCompilerPro
         Collections.sort(description.getClasses());
 
         return description;
-    }
-
-    @Override
-    public Class getProviderInterface()
-    {
-        return OntologyCompilerProvider.class;
     }
 }

@@ -20,6 +20,7 @@
         <dependency>
             <groupId>com.daedafusion.knowledge</groupId>
             <artifactId>partition-core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

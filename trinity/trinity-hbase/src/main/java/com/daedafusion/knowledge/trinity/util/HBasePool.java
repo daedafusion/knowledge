@@ -41,6 +41,11 @@ public class HBasePool implements Closeable
         return pool.getTable(tn);
     }
 
+    public BufferedMutator getBufferedMutator(TableName tn) throws IOException
+    {
+        return pool.getBufferedMutator(tn);
+    }
+
     // TODO method to net new connection?
 
     @Override

@@ -9,6 +9,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 public interface AsyncUpdateProvider extends Provider
 {
     void update(Model model, Long epoch, String partition, String externalSource, String ingestId);
+    void update(String nTripleLine, Long epoch, String partition, String externalSource, String ingestId);
     void truncate(String partition);
 
     String getNamedGraph();

@@ -28,6 +28,7 @@
         <dependency>
             <groupId>com.daedafusion.knowledge</groupId>
             <artifactId>query-core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.daedafusion</groupId>

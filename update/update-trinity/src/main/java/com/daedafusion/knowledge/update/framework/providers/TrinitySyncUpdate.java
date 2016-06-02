@@ -35,7 +35,7 @@ public class TrinitySyncUpdate extends AbstractProvider implements SyncUpdatePro
 
     public TrinitySyncUpdate()
     {
-        pool = new ModelWriterPool(new ModelWriterPool.ModelWriterObjectFactory(true, false));
+        pool = new ModelWriterPool(new ModelWriterPool.ModelWriterObjectFactory(false, false));
         counter = new AtomicLong(0L);
 
         addLifecycleListener(new LifecycleListener()

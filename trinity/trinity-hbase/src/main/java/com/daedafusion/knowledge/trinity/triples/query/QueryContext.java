@@ -50,7 +50,7 @@ public class QueryContext implements Closeable
     public void init() throws IOException
     {
         dictionary = new Dictionary();
-        dictionary.init();
+        dictionary.init(true);
 
         ObjectQueryStrategy oqs = new ObjectQueryStrategy();
         oqs.init(this);

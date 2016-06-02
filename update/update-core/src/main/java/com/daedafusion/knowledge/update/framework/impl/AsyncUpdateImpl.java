@@ -64,6 +64,15 @@ public class AsyncUpdateImpl extends AbstractService<AsyncUpdateProvider> implem
     }
 
     @Override
+    public void update(String namedGraph, String nTripleLine, Long epoch, String partition, String externalSource, String ingestId)
+    {
+        if(!map.containsKey(namedGraph))
+            throw new RuntimeException(String.format("Unsupported named graph (%s)", namedGraph));
+
+        map.get(namedGraph).update(nTripleLine, epoch, partition, externalSource, ingestId);
+    }
+
+    @Override
     public void truncate(String namedGraph, String partition)
     {
         if(!map.containsKey(namedGraph))

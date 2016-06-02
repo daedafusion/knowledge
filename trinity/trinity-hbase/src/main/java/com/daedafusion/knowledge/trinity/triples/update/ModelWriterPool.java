@@ -27,10 +27,12 @@ public class ModelWriterPool extends GenericObjectPool<ModelWriter> implements C
     public static class ModelWriterObjectFactory extends BasePooledObjectFactory<ModelWriter>
     {
         private final boolean isReified;
+        private final boolean isBuffered;
 
-        public ModelWriterObjectFactory(boolean autoFlush, boolean isReified)
+        public ModelWriterObjectFactory(boolean isBuffered, boolean isReified)
         {
             this.isReified = isReified;
+            this.isBuffered = isBuffered;
         }
 
 
@@ -48,13 +50,13 @@ public class ModelWriterPool extends GenericObjectPool<ModelWriter> implements C
             if(isReified)
             {
                 ReifiedModelWriterImpl rmw = new ReifiedModelWriterImpl();
-                rmw.init();
+                rmw.init(isBuffered);
                 mw = rmw;
             }
             else
             {
                 ModelWriterImpl mwi = new ModelWriterImpl();
-                mwi.init();
+                mwi.init(isBuffered);
                 mw = mwi;
             }
             return mw;

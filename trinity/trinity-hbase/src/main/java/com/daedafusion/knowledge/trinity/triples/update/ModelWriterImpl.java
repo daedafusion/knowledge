@@ -20,10 +20,10 @@ public class ModelWriterImpl extends AbstractWriter implements ModelWriter
 
     }
 
-    public static ModelWriter getInstance() throws IOException
+    public static ModelWriter getInstance(boolean buffered) throws IOException
     {
         ModelWriterImpl writer = new ModelWriterImpl();
-        writer.init();
+        writer.init(buffered);
 
         return writer;
     }
