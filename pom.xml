@@ -82,7 +82,7 @@
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>cache-core</artifactId>
-                <version>1.0</version>
+                <version>${df.cache.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
@@ -92,7 +92,7 @@
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>configuration-etcd</artifactId>
-                <version>1.0</version>
+                <version>1.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
@@ -157,17 +157,17 @@
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-framework-core</artifactId>
-                <version>1.0.1</version>
+                <version>${sf.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-framework-test</artifactId>
-                <version>1.0.1</version>
+                <version>${sf.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-framework-yaml</artifactId>
-                <version>1.0.1</version>
+                <version>${sf.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
@@ -251,6 +251,11 @@
             </dependency>
             <dependency>
                 <groupId>com.daedafusion.knowledge</groupId>
+                <artifactId>query-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.daedafusion.knowledge</groupId>
                 <artifactId>trinity-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -272,6 +277,11 @@
             <dependency>
                 <groupId>com.daedafusion.knowledge</groupId>
                 <artifactId>update-framework</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.daedafusion.knowledge</groupId>
+                <artifactId>update-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -602,8 +612,12 @@
         <jackson.version>2.5.1</jackson.version>
         <jersey.version>2.16</jersey.version>
         <hibernate.version>4.3.8.Final</hibernate.version>
-        <hbase.version>1.1.1</hbase.version>
+        <!-- https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.4.0/bk_HDP_RelNotes/content/ch_relnotes_v240.html -->
+        <hbase.version>1.1.2</hbase.version>
         <hadoop.version>2.7.1</hadoop.version>
+        <df.cache.version>1.0</df.cache.version>
+        <aniketos.version>1.0-SNAPSHOT</aniketos.version>
+        <sf.version>1.1-SNAPSHOT</sf.version>
     </properties>
 
     <profiles>

@@ -20,6 +20,7 @@
         <module>query-trinity</module>
         <module>query-ontology-dsl</module>
         <module>query-client</module>
+        <module>query-server</module>
     </modules>
 
     

@@ -1,0 +1,7 @@
+# Docker plugin configuration
+packaging:
+  add:
+    - target/partition-server.jar
+    - target/aniketos-security-framework-provider-${aniketos.version}-plugin.zip
+    - target/partition-storage-hibernate-${project.version}-plugin.zip
+tag: quay.io/daedafusion/partition
