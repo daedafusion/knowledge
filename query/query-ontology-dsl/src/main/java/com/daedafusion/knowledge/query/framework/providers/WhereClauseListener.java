@@ -1,10 +1,10 @@
 package com.daedafusion.knowledge.query.framework.providers;
 
+import com.daedafusion.knowledge.ontology.exceptions.NotFoundException;
+import com.daedafusion.knowledge.ontology.exceptions.ServiceErrorException;
+import com.daedafusion.knowledge.ontology.exceptions.UnauthorizedException;
 import com.daedafusion.service.ServiceIdentity;
 import com.daedafusion.cache.Cache;
-import com.daedafusion.client.exceptions.NotFoundException;
-import com.daedafusion.client.exceptions.ServiceErrorException;
-import com.daedafusion.client.exceptions.UnauthorizedException;
 import com.daedafusion.knowledge.query.dsl.QueryParser;
 import com.daedafusion.sparql.Literal;
 import com.daedafusion.knowledge.ontology.OntologyClient;

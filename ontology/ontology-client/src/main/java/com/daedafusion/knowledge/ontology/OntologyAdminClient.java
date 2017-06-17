@@ -1,9 +1,8 @@
 package com.daedafusion.knowledge.ontology;
 
-import com.daedafusion.client.AbstractClient;
-import com.daedafusion.client.exceptions.NotFoundException;
-import com.daedafusion.client.exceptions.ServiceErrorException;
-import com.daedafusion.client.exceptions.UnauthorizedException;
+import com.daedafusion.knowledge.ontology.exceptions.NotFoundException;
+import com.daedafusion.knowledge.ontology.exceptions.ServiceErrorException;
+import com.daedafusion.knowledge.ontology.exceptions.UnauthorizedException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.StatusLine;
@@ -15,6 +14,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,11 +23,22 @@ import java.util.List;
 /**
  * Created by mphilpot on 8/27/14.
  */
-public class OntologyAdminClient extends AbstractClient
+public class OntologyAdminClient implements Closeable
 {
     private static final Logger log = Logger.getLogger(OntologyAdminClient.class);
 
+    protected static final String ACCEPT = "accept";
+    protected static final String CONTENT = "content-type";
+    protected static final String AUTH = "authorization";
+
+    protected static final String TEXT_XML = "text/xml";
+    protected static final String TEXT_PLAIN = "text/plain";
+    protected static final String APPLICATION_JSON = "application/json";
+
     private ObjectMapper mapper;
+    private URI baseUrl;
+    private CloseableHttpClient client;
+    private String authToken;
 
     public OntologyAdminClient()
     {
@@ -41,7 +52,8 @@ public class OntologyAdminClient extends AbstractClient
 
     public OntologyAdminClient(String url, CloseableHttpClient client)
     {
-        super("ontology", url, client);
+        this.client = client;
+        baseUrl = URI.create(url);
         mapper = new ObjectMapper();
     }
 
@@ -65,7 +77,7 @@ public class OntologyAdminClient extends AbstractClient
         }
     }
 
-    public List<OntologyMeta> getOntologyMeta() throws URISyntaxException, UnauthorizedException, NotFoundException, ServiceErrorException
+    public List<OntologyMeta> getOntologyMeta() throws URISyntaxException, UnauthorizedException, ServiceErrorException
     {
         URIBuilder builder = new URIBuilder(baseUrl).setPath(String.format("/admin/ontologies/meta"));
 
@@ -74,7 +86,7 @@ public class OntologyAdminClient extends AbstractClient
         HttpGet get = new HttpGet(uri);
 
         get.addHeader(ACCEPT, APPLICATION_JSON);
-        get.addHeader(AUTH, getAuthToken());
+//        get.addHeader(AUTH, getAuthToken());
 
         try(CloseableHttpResponse response = client.execute(get))
         {
@@ -98,7 +110,7 @@ public class OntologyAdminClient extends AbstractClient
         HttpGet get = new HttpGet(uri);
 
         get.addHeader(ACCEPT, APPLICATION_JSON);
-        get.addHeader(AUTH, getAuthToken());
+//        get.addHeader(AUTH, getAuthToken());
 
         try(CloseableHttpResponse response = client.execute(get))
         {
@@ -121,7 +133,7 @@ public class OntologyAdminClient extends AbstractClient
         HttpGet get = new HttpGet(uri);
 
         get.addHeader(ACCEPT, APPLICATION_JSON);
-        get.addHeader(AUTH, getAuthToken());
+//        get.addHeader(AUTH, getAuthToken());
 
         try(CloseableHttpResponse response = client.execute(get))
         {
@@ -141,7 +153,7 @@ public class OntologyAdminClient extends AbstractClient
 
         HttpDelete delete = new HttpDelete(uri);
 
-        delete.addHeader(AUTH, getAuthToken());
+//        delete.addHeader(AUTH, getAuthToken());
 
         try(CloseableHttpResponse response = client.execute(delete))
         {
@@ -161,7 +173,7 @@ public class OntologyAdminClient extends AbstractClient
 
         HttpPost post = new HttpPost(uri);
 
-        post.addHeader(AUTH, getAuthToken());
+//        post.addHeader(AUTH, getAuthToken());
 
         post.setEntity(new StringEntity(mapper.writeValueAsString(assignment), ContentType.APPLICATION_JSON));
 
@@ -183,7 +195,7 @@ public class OntologyAdminClient extends AbstractClient
 
         HttpPut put = new HttpPut(uri);
 
-        put.addHeader(AUTH, getAuthToken());
+//        put.addHeader(AUTH, getAuthToken());
 
         put.setEntity(new StringEntity(mapper.writeValueAsString(assignment), ContentType.APPLICATION_JSON));
 
@@ -208,7 +220,7 @@ public class OntologyAdminClient extends AbstractClient
         HttpGet get = new HttpGet(uri);
 
         get.addHeader(ACCEPT, APPLICATION_JSON);
-        get.addHeader(AUTH, getAuthToken());
+//        get.addHeader(AUTH, getAuthToken());
 
         try(CloseableHttpResponse response = client.execute(get))
         {
@@ -228,7 +240,7 @@ public class OntologyAdminClient extends AbstractClient
 
         HttpPost post = new HttpPost(uri);
 
-        post.addHeader(AUTH, getAuthToken());
+//        post.addHeader(AUTH, getAuthToken());
 
         post.setEntity(new StringEntity(mapper.writeValueAsString(oSet), ContentType.APPLICATION_JSON));
 
@@ -244,13 +256,13 @@ public class OntologyAdminClient extends AbstractClient
         }
     }
 
-    public void updateOntologySet(OntologySet oSet) throws IOException, URISyntaxException, UnauthorizedException, NotFoundException, ServiceErrorException
+    public void updateOntologySet(OntologySet oSet) throws IOException, URISyntaxException, UnauthorizedException, ServiceErrorException
     {
         URI uri = new URIBuilder(baseUrl).setPath(String.format("/admin/set/%s", oSet.getUuid())).build();
 
         HttpPut put = new HttpPut(uri);
 
-        put.addHeader(AUTH, getAuthToken());
+//        put.addHeader(AUTH, getAuthToken());
 
         put.setEntity(new StringEntity(mapper.writeValueAsString(oSet), ContentType.APPLICATION_JSON));
 
@@ -266,13 +278,13 @@ public class OntologyAdminClient extends AbstractClient
         }
     }
 
-    public void removeOntologySet(String uuid) throws URISyntaxException, UnauthorizedException, NotFoundException, ServiceErrorException
+    public void removeOntologySet(String uuid) throws URISyntaxException, UnauthorizedException, ServiceErrorException
     {
         URI uri = new URIBuilder(baseUrl).setPath(String.format("/admin/set/%s", uuid)).build();
 
         HttpDelete delete = new HttpDelete(uri);
 
-        delete.addHeader(AUTH, getAuthToken());
+//        delete.addHeader(AUTH, getAuthToken());
 
         try(CloseableHttpResponse response = client.execute(delete))
         {
@@ -286,14 +298,14 @@ public class OntologyAdminClient extends AbstractClient
         }
     }
 
-    public OntologyMeta uploadOntologyRDF(String file) throws URISyntaxException, UnauthorizedException, NotFoundException, ServiceErrorException
+    public OntologyMeta uploadOntologyRDF(String file) throws URISyntaxException, UnauthorizedException, ServiceErrorException
     {
         URI uri = new URIBuilder(baseUrl).setPath(String.format("/admin/ontology")).build();
 
         HttpPost post = new HttpPost(uri);
 
         post.addHeader(ACCEPT, APPLICATION_JSON);
-        post.addHeader(AUTH, getAuthToken());
+//        post.addHeader(AUTH, getAuthToken());
 
         post.setEntity(new StringEntity(file, ContentType.TEXT_XML));
 
@@ -309,14 +321,14 @@ public class OntologyAdminClient extends AbstractClient
         }
     }
 
-    public OntologyMeta uploadOntologyNT(String file) throws URISyntaxException, UnauthorizedException, NotFoundException, ServiceErrorException
+    public OntologyMeta uploadOntologyNT(String file) throws URISyntaxException, UnauthorizedException, ServiceErrorException
     {
         URI uri = new URIBuilder(baseUrl).setPath(String.format("/admin/ontology")).build();
 
         HttpPost post = new HttpPost(uri);
 
         post.addHeader(ACCEPT, APPLICATION_JSON);
-        post.addHeader(AUTH, getAuthToken());
+//        post.addHeader(AUTH, getAuthToken());
 
         post.setEntity(new StringEntity(file, ContentType.TEXT_PLAIN));
 
@@ -332,13 +344,13 @@ public class OntologyAdminClient extends AbstractClient
         }
     }
 
-    public void deleteOntology(String uuid) throws URISyntaxException, UnauthorizedException, NotFoundException, ServiceErrorException
+    public void deleteOntology(String uuid) throws URISyntaxException, UnauthorizedException, ServiceErrorException
     {
         URI uri = new URIBuilder(baseUrl).setPath(String.format("/admin/ontology/%s", uuid)).build();
 
         HttpDelete delete = new HttpDelete(uri);
 
-        delete.addHeader(AUTH, getAuthToken());
+//        delete.addHeader(AUTH, getAuthToken());
 
         try(CloseableHttpResponse response = client.execute(delete))
         {
@@ -383,6 +395,25 @@ public class OntologyAdminClient extends AbstractClient
             {
                 throw new ServiceErrorException(statusLine.getReasonPhrase());
             }
+        }
+    }
+
+    public String getAuthToken()
+    {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken)
+    {
+        this.authToken = authToken;
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        if(client != null)
+        {
+            client.close();
         }
     }
 }

@@ -1,8 +1,0 @@
-# Docker plugin configuration
-packaging:
-  add:
-    - target/update-server.jar
-    - target/update-trinity-${project.version}-plugin.zip
-    - target/aniketos-security-framework-provider-${aniketos.version}-plugin.zip
-    - target/cache-ehcache-${df.cache.version}-plugin.zip
-tag: quay.io/argos/update

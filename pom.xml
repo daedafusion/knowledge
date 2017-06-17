@@ -77,7 +77,7 @@
             <dependency>
                 <groupId>co.paralleluniverse</groupId>
                 <artifactId>capsule</artifactId>
-                <version>0.10.0</version>
+                <version>1.0.3</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
@@ -87,12 +87,7 @@
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>configuration-core</artifactId>
-                <version>1.1-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.daedafusion</groupId>
-                <artifactId>configuration-etcd</artifactId>
-                <version>1.1-SNAPSHOT</version>
+                <version>${df.conf.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
@@ -101,29 +96,9 @@
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
-                <artifactId>events-core</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <!--<dependency>-->
-                <!--<groupId>com.daedafusion.commons</groupId>-->
-                <!--<artifactId>exceptions</artifactId>-->
-                <!--<version>${commons.version}</version>-->
-            <!--</dependency>-->
-            <dependency>
-                <groupId>com.daedafusion</groupId>
                 <artifactId>graph</artifactId>
                 <version>1.0</version>
             </dependency>
-            <!--<dependency>-->
-                <!--<groupId>com.daedafusion.commons</groupId>-->
-                <!--<artifactId>hbase-filters</artifactId>-->
-                <!--<version>${commons.version}</version>-->
-            <!--</dependency>-->
-            <!--<dependency>-->
-                <!--<groupId>com.daedafusion.commons</groupId>-->
-                <!--<artifactId>hbase-test-framework</artifactId>-->
-                <!--<version>${commons.version}</version>-->
-            <!--</dependency>-->
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>hibernate-utils</artifactId>
@@ -131,23 +106,13 @@
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
-                <artifactId>http-dclient</artifactId>
-                <version>1.1-SNAPSHOT</version>
-            </dependency>
-            <!--<dependency>-->
-                <!--<groupId>com.daedafusion.commons</groupId>-->
-                <!--<artifactId>rethink</artifactId>-->
-                <!--<version>${commons.version}</version>-->
-            <!--</dependency>-->
-            <dependency>
-                <groupId>com.daedafusion</groupId>
                 <artifactId>security-framework</artifactId>
-                <version>1.0</version>
+                <version>${df.security.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-bootstrap</artifactId>
-                <version>1.1-SNAPSHOT</version>
+                <version>1.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
@@ -157,17 +122,17 @@
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-framework-core</artifactId>
-                <version>${sf.version}</version>
+                <version>${df.sf.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-framework-test</artifactId>
-                <version>${sf.version}</version>
+                <version>${df.sf.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
                 <artifactId>service-framework-yaml</artifactId>
-                <version>${sf.version}</version>
+                <version>${df.sf.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.daedafusion</groupId>
@@ -609,15 +574,17 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jackson.version>2.5.1</jackson.version>
-        <jersey.version>2.16</jersey.version>
+        <jackson.version>2.8.4</jackson.version>
+        <jersey.version>2.25.1</jersey.version>
         <hibernate.version>4.3.8.Final</hibernate.version>
         <!-- https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.4.0/bk_HDP_RelNotes/content/ch_relnotes_v240.html -->
         <hbase.version>1.1.2</hbase.version>
         <hadoop.version>2.7.1</hadoop.version>
-        <df.cache.version>1.0</df.cache.version>
+        <df.cache.version>1.2-SNAPSHOT</df.cache.version>
+        <df.conf.version>1.1</df.conf.version>
         <aniketos.version>1.0-SNAPSHOT</aniketos.version>
-        <sf.version>1.1-SNAPSHOT</sf.version>
+        <df.sf.version>1.2-SNAPSHOT</df.sf.version>
+        <df.security.version>1.2-SNAPSHOT</df.security.version>
     </properties>
 
     <profiles>

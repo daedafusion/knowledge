@@ -1,9 +1,8 @@
 package com.daedafusion.knowledge.ontology;
 
-import com.daedafusion.client.AbstractClient;
-import com.daedafusion.client.exceptions.NotFoundException;
-import com.daedafusion.client.exceptions.ServiceErrorException;
-import com.daedafusion.client.exceptions.UnauthorizedException;
+import com.daedafusion.knowledge.ontology.exceptions.NotFoundException;
+import com.daedafusion.knowledge.ontology.exceptions.ServiceErrorException;
+import com.daedafusion.knowledge.ontology.exceptions.UnauthorizedException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.StatusLine;
@@ -11,9 +10,11 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,11 +26,22 @@ import java.util.Set;
 /**
  * Created by mphilpot on 8/27/14.
  */
-public class OntologyClient extends AbstractClient
+public class OntologyClient implements Closeable
 {
     private static final Logger log = Logger.getLogger(OntologyClient.class);
 
+    protected static final String ACCEPT = "accept";
+    protected static final String CONTENT = "content-type";
+    protected static final String AUTH = "authorization";
+
+    protected static final String TEXT_XML = "text/xml";
+    protected static final String TEXT_PLAIN = "text/plain";
+    protected static final String APPLICATION_JSON = "application/json";
+
     private ObjectMapper mapper;
+    private URI baseUrl;
+    private CloseableHttpClient client;
+    private String authToken;
 
     public OntologyClient()
     {
@@ -43,8 +55,14 @@ public class OntologyClient extends AbstractClient
 
     public OntologyClient(String url, CloseableHttpClient client)
     {
-        super("ontology", url, client);
+        this.client = client;
+        baseUrl = URI.create(url);
         mapper = new ObjectMapper();
+
+        if(client == null)
+        {
+            this.client = HttpClients.createSystem();
+        }
     }
 
     public String ping() throws URISyntaxException, ServiceErrorException
@@ -67,7 +85,7 @@ public class OntologyClient extends AbstractClient
         }
     }
 
-    public String getOntologyRDF(String uuid) throws URISyntaxException, ServiceErrorException, NotFoundException, UnauthorizedException
+    public String getOntologyRDF(String uuid) throws URISyntaxException, ServiceErrorException, UnauthorizedException
     {
         URI uri = new URIBuilder(baseUrl).setPath(String.format("/ontology/%s", uuid)).build();
 
@@ -88,7 +106,7 @@ public class OntologyClient extends AbstractClient
         }
     }
 
-    public String getOntologyNT(String uuid) throws URISyntaxException, UnauthorizedException, NotFoundException, ServiceErrorException
+    public String getOntologyNT(String uuid) throws URISyntaxException, UnauthorizedException, ServiceErrorException
     {
         URI uri = new URIBuilder(baseUrl).setPath(String.format("/ontology/%s", uuid)).build();
 
@@ -109,7 +127,7 @@ public class OntologyClient extends AbstractClient
         }
     }
 
-    public OntologyDescription getOntologyDescription(String domain) throws NotFoundException, ServiceErrorException, UnauthorizedException, URISyntaxException
+    public OntologyDescription getOntologyDescription(String domain) throws ServiceErrorException, UnauthorizedException, URISyntaxException
     {
         return getOntologyDescription(domain, new ArrayList<String>());
     }
@@ -226,7 +244,7 @@ public class OntologyClient extends AbstractClient
         }
     }
 
-    private void throwForStatus(StatusLine statusLine) throws NotFoundException, ServiceErrorException, UnauthorizedException
+    private void throwForStatus(StatusLine statusLine) throws ServiceErrorException, UnauthorizedException
     {
         if(statusLine.getStatusCode() >= 300)
         {
@@ -242,6 +260,25 @@ public class OntologyClient extends AbstractClient
             {
                 throw new ServiceErrorException(statusLine.getReasonPhrase());
             }
+        }
+    }
+
+    public String getAuthToken()
+    {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken)
+    {
+        this.authToken = authToken;
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        if(client != null)
+        {
+            client.close();
         }
     }
 }

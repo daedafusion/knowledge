@@ -20,6 +20,5 @@
         <module>ontology-core</module>
         <module>ontology-storage-hibernate</module>
         <module>ontology-client</module>
-        <module>ontology-server</module>
     </modules>
 </project>

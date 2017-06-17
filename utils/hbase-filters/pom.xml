@@ -24,7 +24,7 @@
     </dependencies>
 
     <properties>
-        <protoc.path>/usr/local/bin/protoc</protoc.path>
+        <protoc.path>/usr/local/opt/protobuf@2.5/bin/protoc</protoc.path>
         <protoc.version>2.5.0</protoc.version>
     </properties>
 

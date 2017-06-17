@@ -1,7 +1,0 @@
-*/target/classes
-*/target/generated-sources
-*/target/docker
-
-.git
-.idea
-target

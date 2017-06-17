@@ -18,7 +18,6 @@
         <module>partition-entities</module>
         <module>partition-core</module>
         <module>partition-storage-hibernate</module>
-        <module>partition-client</module>
-        <module>partition-server</module>
+        <!--<module>partition-client</module>-->
     </modules>
 </project>
