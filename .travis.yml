@@ -10,6 +10,11 @@ addons:
     packages:
       - protobuf-compiler
 
+before_install:
+  - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
+  - echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import
+  - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
+
 install: mvn install -DskipTests=true -Ptravis
 script: mvn test -Ptravis
 
@@ -19,3 +24,4 @@ cache:
 
 after_success:
   - mvn clean test jacoco:report coveralls:report
+  - "[[ $TRAVIS_BRANCH == \"master\" ]] && { mvn clean deploy --settings .travis/settings.xml -Ptravis,plugin,sign,sonatype -DskipTests=true -B; };"
