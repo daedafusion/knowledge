@@ -1,8 +1,7 @@
 package com.daedafusion.knowledge.query;
 
-import com.daedafusion.client.AbstractClient;
-import com.daedafusion.client.exceptions.ServiceErrorException;
-import com.daedafusion.client.exceptions.UnauthorizedException;
+import com.daedafusion.knowledge.query.exceptions.ServiceErrorException;
+import com.daedafusion.knowledge.query.exceptions.UnauthorizedException;
 import com.daedafusion.knowledge.trinity.Query;
 import com.daedafusion.sparql.SparqlResults;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,9 +14,11 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,11 +27,22 @@ import java.util.List;
 /**
  * Created by mphilpot on 10/1/14.
  */
-public class QueryClient extends AbstractClient
+public class QueryClient implements Closeable
 {
     private static final Logger log = Logger.getLogger(QueryClient.class);
 
+    protected static final String ACCEPT = "accept";
+    protected static final String CONTENT = "content-type";
+    protected static final String AUTH = "authorization";
+
+    protected static final String TEXT_XML = "text/xml";
+    protected static final String TEXT_PLAIN = "text/plain";
+    protected static final String APPLICATION_JSON = "application/json";
+
     private ObjectMapper mapper;
+    private URI baseUrl;
+    private CloseableHttpClient client;
+    private String authToken;
 
     public QueryClient()
     {
@@ -44,8 +56,14 @@ public class QueryClient extends AbstractClient
 
     public QueryClient(String url, CloseableHttpClient client)
     {
-        super("query", url, client);
+        this.client = client;
+        baseUrl = URI.create(url);
         mapper = new ObjectMapper();
+
+        if(client == null)
+        {
+            this.client = HttpClients.createSystem();
+        }
     }
 
     public String ping() throws URISyntaxException, ServiceErrorException
@@ -182,6 +200,25 @@ public class QueryClient extends AbstractClient
             {
                 throw new ServiceErrorException(statusLine.getReasonPhrase());
             }
+        }
+    }
+
+    public String getAuthToken()
+    {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken)
+    {
+        this.authToken = authToken;
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        if(client != null)
+        {
+            client.close();
         }
     }
 }

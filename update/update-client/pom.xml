@@ -14,10 +14,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.daedafusion</groupId>
-            <artifactId>http-dclient</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.daedafusion.knowledge</groupId>
             <artifactId>sparql-entities</artifactId>
         </dependency>

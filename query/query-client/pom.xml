@@ -14,10 +14,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.daedafusion</groupId>
-            <artifactId>http-dclient</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.daedafusion.knowledge</groupId>
             <artifactId>sparql-entities</artifactId>
         </dependency>
@@ -32,16 +28,6 @@
         <dependency>
             <groupId>com.daedafusion.knowledge</groupId>
             <artifactId>trinity-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.daedafusion</groupId>
-            <artifactId>service-discovery</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.daedafusion.knowledge</groupId>
-            <artifactId>partition-client</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
